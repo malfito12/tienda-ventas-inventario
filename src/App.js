@@ -1,25 +1,18 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useContext } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { AuthContext, AuthProvider } from './Components/Atoms/AuthContext'
+import Navigation from './Components/Atoms/Navigation'
+import MainDrawer from './Components/Organisms/MainDrawer'
+import Home from './Pages/Private/Home'
+import AddSucursal from './Pages/Private/Sucursales/AddSucursal'
+import Login from './Pages/Public/Login'
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <AuthProvider>
+      <Navigation />
+    </AuthProvider >
+  )
 }
 
-export default App;
+export default App
