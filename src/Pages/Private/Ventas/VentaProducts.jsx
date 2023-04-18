@@ -1,4 +1,4 @@
-import { Box, Button, Container, Dialog, Grid, IconButton, InputLabel, makeStyles, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TableRow, TextField, Typography } from '@material-ui/core'
+import { Box, Breadcrumbs, Button, Chip, Container, Dialog, emphasize, Grid, IconButton, InputLabel, makeStyles, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TableRow, TextField, Typography, withStyles } from '@material-ui/core'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import SearchIcon from '@material-ui/icons/Search';
 import { AuthContext } from '../../../Components/Atoms/AuthContext';
@@ -13,11 +13,29 @@ import Swal from 'sweetalert2';
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
 import QRCode from 'qrcode'
+import { useNavigate, useParams } from 'react-router-dom';
 
 const ipcRenderer = window.require('electron').ipcRenderer
 
+const StyledBreadcrumb = withStyles((theme) => ({
+  root: {
+    backgroundColor: theme.palette.grey[100],
+    height: theme.spacing(3),
+    color: theme.palette.grey[800],
+    fontWeight: theme.typography.fontWeightRegular,
+    '&:hover, &:focus': {
+      backgroundColor: theme.palette.grey[300],
+    },
+    '&:active': {
+      boxShadow: theme.shadows[1],
+      backgroundColor: emphasize(theme.palette.grey[300], 0.12),
+    },
+  },
+}))(Chip);
 
 export const VentaProducts = () => {
+  const navigate = useNavigate()
+  const { id } = useParams()
   const { idSuc } = useContext(AuthContext)
   const [products, setProducts] = useState([])
   const classes = useStyles()
@@ -29,9 +47,11 @@ export const VentaProducts = () => {
     product_name: '',
     product_amount: '',
     cantidad: '',
-    price: ''
+    price: '',
+    product_price: '',
+    type_amount:''
   })
-  const reChangeData = { product_name: '', product_amount: '', cantidad: '', price: '' }
+  const reChangeData = {product_price: '', product_name: '', product_amount: '', cantidad: '', price: '' }
   useEffect(() => {
     getAllProducts()
   }, [])
@@ -89,19 +109,13 @@ export const VentaProducts = () => {
   //---------------------UPDATE DATA---------------------
   const [openModalData, setOpenModalData] = useState(false)
   const openCloseModalData = (e) => {
+    console.log(e)
     setChangeData(e)
     setOpenModalData(!openModalData)
   }
   const updateData = (e) => {
-    var cant = 0
-    if (changeData.type_amount === 'Caja') {
-      cant = parseFloat(changeData.cantidad) * parseFloat(changeData.product_price)
-    } else if (changeData.type_amount === 'Unidad') {
-      cant = parseFloat(changeData.cantidad) * parseFloat(changeData.product_price_unit)
-    }
-    changeData.price = cant.toFixed(2)
     e.preventDefault()
-    const indice = uno.findIndex((elemento, indice) => {
+    const indice = uno.findIndex((elemento) => {
       if (elemento.agre_id === changeData.agre_id) {
         return true;
       }
@@ -119,11 +133,14 @@ export const VentaProducts = () => {
     } else if (precioVenta.current.value === '0') {
       Toast.fire({ icon: 'error', title: 'Error, El Precio de Venta esta en 0, coloque un valor' })
       return
+    }else if(client.length===0){
+      Toast.fire({ icon: 'error', title: 'Error, No existen datos del cliente, presione buscar' })
+      return
     }
     const data = {
       // client_name: client_name.current.value,
       client_id: client[0].client_id,
-      type_amount: changeData.type_amount,
+      // type_amount: changeData.type_amount,
       product_total_price: nose.toFixed(2),
       product_venta_price: precioVenta.current.value,
       sucursal_id: idSuc,
@@ -133,6 +150,7 @@ export const VentaProducts = () => {
       data: uno,
       recibo: data
     }
+    console.log(data2)
     await ipcRenderer.invoke('post-product-move-venta', data2)
       .then(resp => {
         const response = JSON.parse(resp)
@@ -200,17 +218,17 @@ export const VentaProducts = () => {
         { content: 'Producto', styles: { halign: 'center' } },
         { content: 'Tipo', styles: { halign: 'center' } },
         { content: 'Cantidad', styles: { halign: 'center' } },
-        { content: 'Precio', styles: { halign: 'center' } },
+        // { content: 'Precio', styles: { halign: 'center' } },
       ]],
       body: uno.map((e, index) => ([
         { content: e.product_name },
         { content: e.type_amount, styles: { halign: 'center' } },
         { content: e.cantidad, styles: { halign: 'right' } },
-        { content: e.price, styles: { halign: 'right' } },
+        // { content: e.price, styles: { halign: 'right' } },
       ])),
       foot: [[
-        { content: 'Total a Pagar', colSpan: 3 },
-        { content: precioVenta.current.value, styles: { halign: 'right' } }
+        { content: 'Total a Pagar', colSpan: 2 },
+        { content: `${precioVenta.current.value} Bs.`, styles: { halign: 'right' } }
       ]],
       startY: 1.3,
       tableWidth: 4.3,
@@ -231,24 +249,40 @@ export const VentaProducts = () => {
     setUno([])
     setClient([])
     client_ci.current.value = ''
-    precioVenta.current.value=0
+    precioVenta.current.value = 0
   }
   //---------------------HANLDE CHANGE TIPO DE CANTIDAD---------------------
+  const calcular = () => {
+    var cant = 0
+    if (changeData.type_amount === 'Caja') {
+      cant = parseFloat(changeData.cantidad) * parseFloat(changeData.product_price)
+    } else if (changeData.type_amount === 'Unidad') {
+      cant = parseFloat(changeData.cantidad) * parseFloat(changeData.product_price_unit)
+    }
+    setChangeData({...changeData,price:cant.toFixed(2)})
+  }
+
+  //---------------------HANLDE CHANGE TIPO DE CANTIDAD---------------------
   const handleChange = (e) => {
+
     setChangeData({
       ...changeData,
       [e.target.name]: e.target.value
     })
-  }
+    // setPre({ precioeje: cant })
 
-  // console.log(client)
-  // console.log(client_ci)
+  }
+  // console.log(changeData.cantidad)
+  // console.log(changeData.product_price)
   return (
     <>
       <Container maxWidth={false}>
-        <Typography variant='h5'>Raelizar Venta</Typography>
+        <Breadcrumbs className={classes.spacingBread}>
+          <StyledBreadcrumb label="Realizar Venta" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/maindrawer/ventas/${id}`)} />
+          <StyledBreadcrumb label="Registro de Ventas" onClick={() => navigate(`/maindrawer/lista-ventas/${id}`)} />
+        </Breadcrumbs>
         <Grid style={{ marginTop: 20, marginBottom: 40 }} container justifyContent='flex-end' alignItems='center'>
-          <Typography variant='subtitle1' style={{marginRight:10}} >Buscar</Typography>
+          <Typography variant='subtitle1' style={{ marginRight: 10 }} >Buscar</Typography>
           <TextField
             variant='outlined'
             size='small'
@@ -295,6 +329,14 @@ export const VentaProducts = () => {
                         <Typography>{e.cantidad}</Typography>
                       </Grid>
                       <Grid item xs={12} sm={2}>
+                        {/* <TextField
+                          name='price'
+                          variant='outlined'
+                          size='small'
+                          defaultValue={e.price}
+                          onChange={handleChange}
+                        // onChange={handleCambio}
+                        /> */}
                         <Typography>{e.price} Bs.</Typography>
                       </Grid>
                       <Grid item xs={12} sm={2} align='center'>
@@ -364,16 +406,20 @@ export const VentaProducts = () => {
                         <TableCell>{e.product_code}</TableCell>
                         <TableCell>{e.product_name}</TableCell>
                         <TableCell width={20}><Paper style={
-                          e.stock >= 50
+                          e.stock > 50
                             ? { background: '#43a047', color: 'white', padding: 5 }
-                            : e.stock >= 25 && e.stock <= 49
+                            : e.stock > 25 && e.stock <= 50
                               ? { background: '#ffeb3b', color: '#616161', padding: 5 }
-                              : e.stock >= 1 && e.stock <= 24
+                              : e.stock > 0 && e.stock <= 25
                                 ? { background: '#f44336', color: 'white', padding: 5 }
                                 : null
                         }>{e.stock}</Paper></TableCell>
                         <TableCell>
-                          <Button onClick={() => agregar(e)} size='small' endIcon={<LocalGroceryStoreIcon />} variant='outlined' style={{ background: '#2196f3', color: 'white', textTransform: 'capitalize' }}>Agregar</Button>
+                          {e.stock > 0 ? (
+                            <Button onClick={() => agregar(e)} size='small' endIcon={<LocalGroceryStoreIcon />} variant='outlined' style={{ background: '#2196f3', color: 'white', textTransform: 'capitalize' }}>Agregar</Button>
+                          ) : (
+                            <Button disabled onClick={() => agregar(e)} size='small' endIcon={<LocalGroceryStoreIcon />} variant='outlined' style={{ background: '#757575', color: 'white', textTransform: 'capitalize' }}>Agregar</Button>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))
@@ -417,13 +463,27 @@ export const VentaProducts = () => {
             <MenuItem value='Unidad'>Por Unidad</MenuItem>
           </TextField>
           <label>Cantidad</label>
+          <Grid container direction='row' alignItems='center'>
+            <TextField
+              name='cantidad'
+              variant='outlined'
+              size='small'
+              // fullWidth
+              onChange={handleChange}
+              defaultValue={changeData.cantidad}
+              inputProps={{ step: 'any' }}
+              type='number'
+              className={classes.alignText} />
+            <Button onClick={calcular} size='small' variant='contained' color='primary' style={{ marginLeft: 20, marginBottom: 10 }}>calcular</Button>
+          </Grid>
+          <label>Precio Bs.</label>
           <TextField
-            name='cantidad'
+            name='price'
             variant='outlined'
             size='small'
             fullWidth
             onChange={handleChange}
-            defaultValue={changeData.cantidad}
+            value={changeData.price}
             inputProps={{ step: 'any' }}
             type='number'
             className={classes.alignText} />
@@ -439,5 +499,14 @@ const useStyles = makeStyles((theme) => ({
   alignText: {
     margintop: 10,
     marginBottom: 10
+  },
+  spacingBread: {
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  buttonSave: {
+    background: '#43a047',
+    color: 'white',
+    marginBottom: 20,
   }
 }))

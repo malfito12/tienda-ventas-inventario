@@ -20,6 +20,18 @@ CREATE TABLE IF NOT EXISTS users(
 
 INSERT INTO users VALUES ('Primero','admin','admin@gmail.com','21232f297a57a5a743894a0e4a801fc3','admin','ACTIVO', '01-01-2023',1);
 
+CREATE TABLE IF NOT EXISTS clients(
+    client_name VARCHAR(30) NOT NULL,
+    client_surname_p VARCHAR(15) NOT NULL,
+    client_surname_m VARCHAR(15) NOT NULL,
+    client_ci VARCHAR (15) NOT NULL,
+    client_phone VARCHAR(15) NOT NULL,
+    client_address VARCHAR(50) NOT NULL,
+    client_register_date DATE NOT NULL,
+    user_id INT NOT NULL,
+    client_id SERIAL PRIMARY KEY,
+    CONSTRAINT pk_users FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
 
 CREATE TABLE IF NOT EXISTS sucursales(
     sucursal_name VARCHAR(50) NOT NULL,
@@ -73,13 +85,20 @@ CREATE TABLE IF NOT EXISTS move_type_product(
     move_id SERIAL PRIMARY KEY    
 );
 
-INSERT INTO move_type_product VALUES ('ENTRADA'),('SALIDA');
+INSERT INTO move_type_product VALUES ('ENTRADA'),('SALIDA'),('INGRESO'),('EGRESO');
+
+CREATE TABLE IF NOT EXISTS stock_products(
+    stock NUMERIC (20,2) NOT NULL,
+    product_id INT NOT NULL,
+    register_date DATE NOT NULL,
+    stock_id SERIAL PRIMARY KEY,
+    CONSTRAINT pk_products FOREIGN KEY (product_id) REFERENCES products(product_id)
+
+);
 
 CREATE TABLE IF NOT EXISTS products_move(
     product_move_amount NUMERIC (20,2) NOT NULL,
     product_move_price NUMERIC (20,2) NOT NULL,
-    product_total_amount NUMERIC (20,2) NOT NULL,
-    product_total_price NUMERIC (20,2) NOT NULL,
     product_move_code VARCHAR(20) NOT NULL,
     product_move_register_date DATE NOT NULL,
     product_id INT NOT NULL,
@@ -89,23 +108,11 @@ CREATE TABLE IF NOT EXISTS products_move(
     CONSTRAINT pk_move_type FOREIGN KEY (move_id) REFERENCES move_type_product(move_id)
 );
 
-CREATE TABLE IF NOT EXISTS clients(
-    client_name VARCHAR(30) NOT NULL,
-    client_surname_p VARCHAR(15) NOT NULL,
-    client_surname_m VARCHAR(15) NOT NULL,
-    client_ci VARCHAR (15) NOT NULL,
-    client_phone VARCHAR(15) NOT NULL,
-    client_address VARCHAR(50) NOT NULL,
-    client_register_date DATE NOT NULL,
-    user_id INT NOT NULL,
-    client_id SERIAL PRIMARY KEY,
-    CONSTRAINT pk_users FOREIGN KEY (user_id) REFERENCES users(user_id),
-);
-
 CREATE TABLE IF NOT EXISTS product_ventas(
     product_total_price NUMERIC(20,2) NOT NULL,
     product_venta_price NUMERIC(20,2) NOT NULL,
     product_venta_code VARCHAR(20) NOT NULL,
+    register_date DATE NOT NULL,
     sucursal_id INT NOT NULL,
     client_id INT NOT NULL,
     user_id INT NOT NULL,
@@ -115,7 +122,70 @@ CREATE TABLE IF NOT EXISTS product_ventas(
     CONSTRAINT pk_clients FOREIGN KEY (client_id) REFERENCES clients(client_id)
 );
 
+CREATE TABLE IF NOT EXISTS ingresos_egresos_caja(
+    description_mov VARCHAR(10) NOT NULL,
+    motivo_mov TEXT NOT NULL,
+    monto_mov NUMERIC(20,2) NOT NULL,
+    move_id INT NOT NULL,
+    register_date DATE NOT NULL,
+    sucursal_id INT NOT NULL,
+    ing_eg_id SERIAL NOT NULL,
+    CONSTRAINT pk_move_type FOREIGN KEY(move_id) REFERENCES move_type_product(move_id),
+    CONSTRAINT pk_sucursales FOREIGN KEY(sucursal_id) REFERENCES sucursales(sucursal_id)
+);
 
+CREATE TABLE IF NOT EXISTS libro_semana(
+    register_date VARCHAR(10) NOT NULL,
+    name_product VARCHAR(50) NOT NULL,
+    type_product VARCHAR(50) NOT NULL,
+    price_product NUMERIC(20,2) NOT NULL,
+    cantidad NUMERIC(20,2) NOT NULL,
+    total NUMERIC(20,2) NOT NULL,
+    fechaInicio VARCHAR(10) NOT NULL,
+    fechaFin VARCHAR(10) NOT NULL,
+	move_id INT NOT NULL,
+    sucursal_id INT NOT NULL,
+    libro_semana_id SERIAL PRIMARY KEY,
+    CONSTRAINT pk_sucursales FOREIGN KEY (sucursal_id) REFERENCES sucursales(sucursal_id)
+);
+
+CREATE TABLE IF NOT EXISTS total_semana(
+    descripcion VARCHAR(50) NOT NULL,
+    ingreso NUMERIC(20,2) NOT NULL,
+    egreso NUMERIC(20,2) NOT NULL,
+    total NUMERIC(20,2) NOT NULL,
+    fechaInicio VARCHAR(10) NOT NULL,
+    fechaFin VARCHAR(10) NOT NULL,
+    register_mes INT NOT NULL,
+    register_date DATE NOT NULL,
+    sucursal_id INT NOT NULL,
+    semana_id SERIAL PRIMARY KEY,
+    CONSTRAINT pk_sucursales FOREIGN KEY (sucursal_id) REFERENCES sucursales(sucursal_id)
+);
+CREATE TABLE IF NOT EXISTS libro_mes(
+    register_date VARCHAR(10) NOT NULL,
+    product_name VARCHAR(50) NOT NULL,
+    type_product VARCHAR(50) NOT NULL,
+    type_move INT NOT NULL,
+    cantidad NUMERIC(20,2) NOT NULL,
+    total NUMERIC(20,2) NOT NULL,
+    anio VARCHAR(10) NOT NULL,
+    mes VARCHAR(20) NOT NULL,
+    sucursal_id INT NOT NULL,
+    libro_mes_id SERIAL PRIMARY KEY,
+    CONSTRAINT pk_sucursales FOREIGN KEY (sucursal_id) REFERENCES sucursales(sucursal_id)
+);
+CREATE TABLE IF NOT EXISTS total_mes(
+    ingreso NUMERIC(20,2) NOT NULL,
+    egreso NUMERIC(20,2) NOT NULL,
+    total NUMERIC(20,2) NOT NULL,
+    anio VARCHAR(10) NOT NULL,
+    mes VARCHAR(20) NOT NULL,
+    register_date DATE NOT NULL,
+    sucursal_id INT NOT NULL,
+    mes_id SERIAL PRIMARY KEY,
+    CONSTRAINT pk_sucursales FOREIGN KEY (sucursal_id) REFERENCES sucursales(sucursal_id)
+);
 
 -- ALTER SEQUENCE product_types_type_codigo_seq RESTART WITH 100;
 -------------------------LISTA PRODUCTOS------------------------

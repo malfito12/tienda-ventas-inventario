@@ -123,11 +123,11 @@ export default function ListViewProduct() {
                     <TableHead>
                         <TableRow>
                             <TableCell>N°</TableCell>
-                            <TableCell>imagen</TableCell>
-                            <TableCell>Nombre de Producto</TableCell>
-                            <TableCell>Cantidad Total Stock</TableCell>
-                            <TableCell>Precio total</TableCell>
-                            <TableCell>Acciones</TableCell>
+                            <TableCell align='center'>imagen</TableCell>
+                            <TableCell align='center'>Nombre de Producto</TableCell>
+                            <TableCell align='center'>Codigo de Producto</TableCell>
+                            <TableCell align='center'>Cantidad Total Stock</TableCell>
+                            <TableCell align='center'>Acciones</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -135,27 +135,27 @@ export default function ListViewProduct() {
                             products.map((e, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{index + 1}</TableCell>
-                                    <TableCell>
+                                    <TableCell align='center'>
                                         <IconButton size='small' onClick={() => openImages(e.product_image)}>
                                             <img src={e.product_image} style={{ width: '50px', height: '50px' }} alt='#' />
                                         </IconButton>
                                     </TableCell>
-                                    <TableCell>{e.product_name}</TableCell>
+                                    <TableCell align='center'>{e.product_name}</TableCell>
                                     {/* <TableCell>{e.product_total_amount}</TableCell> */}
-                                    <TableCell>{e.stock}</TableCell>
-                                    <TableCell>{e.product_total_price}</TableCell>
-                                    <TableCell>
+                                    <TableCell align='center'>{e.product_code}</TableCell>
+                                    <TableCell align='center'>{e.stock}</TableCell>
+                                    <TableCell align='center'>
                                         <UpdateProduct data={e} getProducts={getAllProducts} />
                                         <Tooltip title='Eliminar'>
                                             <IconButton onClick={() => openCloseModalDelete(e.product_id)} size='small' style={{ background: '#f44336', color: 'white', marginRight: 5 }}>
                                                 <DeleteForeverSharpIcon />
                                             </IconButton>
                                         </Tooltip>
-                                        <Tooltip title='Ver Movimientos'>
+                                        {/* <Tooltip title='Ver Movimientos'>
                                             <IconButton size='small' style={{ background: '#1565c0', color: 'white', marginRight: 5 }} onClick={() => navigate(`/maindrawer/kardex-producto/${e.product_id}`)}>
                                                 <VideoLabelSharpIcon />
                                             </IconButton>
-                                        </Tooltip>
+                                        </Tooltip> */}
                                     </TableCell>
                                 </TableRow>
                             ))

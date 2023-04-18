@@ -25,19 +25,47 @@ controllers.registerClient = async (e, args) => {
 
 controllers.getAllClients = async (e, args) => {
     try {
-        const result =await conn.query(`SELECT * FROM clients`)
+        const result = await conn.query(`SELECT * FROM clients`)
         return JSON.stringify(result.rows)
     } catch (error) {
         console.log(error)
     }
 }
 
-controllers.searchClient=async(e,args)=>{
+controllers.searchClient = async (e, args) => {
     try {
-        const result=await conn.query(`SELECT * FROM clients WHERE client_ci=$1`,[args])
+        const result = await conn.query(`SELECT * FROM clients WHERE client_ci=$1`, [args])
         return JSON.stringify(result.rows)
     } catch (error) {
         console.log(error)
+    }
+}
+
+
+//-------------------RECIBO---------------------------------
+controllers.imprimirRecibo = async (e, args) => {
+    const params = args
+    try {
+        const result = await conn.query(
+            `SELECT t.type_name, p.product_name,p.sucursal_id,ROUND(m.product_move_amount/p.product_amount_box,2) as product_move_amount,m.product_move_price,m.product_move_code 
+            FROM products_move m
+            INNER JOIN products p ON p.product_id=m.product_id
+            INNER JOIN product_types t ON t.type_id=p.type_id
+            WHERE m.product_move_code=$1 AND p.sucursal_id=$2`,
+            [params.code, params.sucursal_id]
+        )
+        const result2 = await conn.query(
+            `SELECT p.product_venta_price FROM product_ventas p WHERE p.product_venta_code=$1 AND sucursal_id=$2`,
+            [params.code, params.sucursal_id]
+        )
+        const data={data:result.rows,precio_venta:result2.rows[0].product_venta_price}
+        if (result.rowCount > 0 && result2.rowCount>0) {
+            return JSON.stringify({ status: 200, data: data })
+        }
+        return JSON.stringify({ status: 300, message: 'Error, No existen datos' })
+    } catch (error) {
+        console.log(error)
+        return JSON.stringify({ status: 300, message: error })
     }
 }
 

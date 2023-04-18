@@ -22,6 +22,11 @@ import NaturePeopleIcon from '@material-ui/icons/NaturePeople';
 import PersonSharpIcon from '@material-ui/icons/PersonSharp';
 import { ListViewClients } from '../../Pages/Private/Clientes/ListViewClients';
 import CierreCaja from '../../Pages/Private/Cajas/CierreCaja';
+import BalanceDiario from '../../Pages/Private/Balances/BalanceDiario';
+import BalanceMensual from '../../Pages/Private/Balances/BalanceMensual';
+import IngresosEgresos from '../../Pages/Private/Cajas/IngresosEgresos';
+import LibroDiario from '../../Pages/Private/Cajas/LibroDiario';
+import ListViewVentas from '../../Pages/Private/Ventas/ListViewVentas';
 
 const drawerWidth = 60;
 
@@ -118,21 +123,13 @@ function MainDrawer(props) {
                     {/* </ListItemIcon> */}
                     {/* <ListItemText primary='Perfil Sucursal' /> */}
                 </ListItem>
-                <ListItem button onClick={()=>navigate(`/maindrawer/cierre-caja/${idSuc}`)}>
+                <ListItem button onClick={()=>navigate(`/maindrawer/libro-diario/${idSuc}`)}>
                     {/* <ListItemIcon style={{color:'white'}}> */}
                     <Tooltip title='Cierre de Caja'>
                         <CheckBoxIcon style={{ color: 'white', marginBottom: 10 }} />
                     </Tooltip>
                     {/* </ListItemIcon> */}
                     {/* <ListItemText primary='Cierre de Caja' /> */}
-                </ListItem>
-                <ListItem button>
-                    {/* <ListItemIcon style={{color:'white'}}> */}
-                    <Tooltip title='Balances'>
-                        <AccountBalanceIcon style={{ color: 'white', marginBottom: 10 }} />
-                    </Tooltip>
-                    {/* </ListItemIcon> */}
-                    {/* <ListItemText primary='Balances' /> */}
                 </ListItem>
             </List>
         </div>
@@ -183,10 +180,15 @@ function MainDrawer(props) {
                         <Route path='/tipo-producto/:id' element={<ListViewTypeProduct />} />
                         <Route path='/unidad-medida/:id' element={<ListViewUnidadMedida />} />
                         <Route path='/ventas/:id' element={<VentaProducts />} />
+                        <Route path='/lista-ventas/:id' element={<ListViewVentas />} />
                         <Route path='/kardex-producto/:id' element={<KardexProducto />} />
                         <Route path='/registro-producto/:id' element={<RegisterProduct />} />
                         <Route path='/clientes/:id' element={<ListViewClients />} />
                         <Route path='/cierre-caja/:id' element={<CierreCaja />} />
+                        <Route path='/libro-diario/:id' element={<LibroDiario />} />
+                        <Route path='/balance-semana/:id' element={<BalanceDiario />} />
+                        <Route path='/balance-mes/:id' element={<BalanceMensual />} />
+                        <Route path='/ingresos-egresos/:id' element={<IngresosEgresos />} />
                     </Routes>
                 </main>
             </div>

@@ -17,7 +17,7 @@ const ListViewUser = () => {
       .then(resp => setUsers(JSON.parse(resp)))
       .catch(err => console.log(err))
   }
-  console.log(users)
+  // console.log(users)
   return (
     <Container>
       <Typography variant='h5' className={classes.alignTextTitle}>Administrar Usuarios</Typography>

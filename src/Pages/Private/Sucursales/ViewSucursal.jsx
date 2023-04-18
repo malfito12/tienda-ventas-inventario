@@ -51,24 +51,24 @@ const ViewSucursal = () => {
                         </IconButton>
                     </Box>
                     <Box className={classes.sucursalSpacing}>
-                        <IconButton>
+                        <IconButton onClick={() => navigate(`/maindrawer/registro-producto/${idSuc}`)}>
+                            <HomeWorkIcon className={classes.sucursalIcon} />
+                            <Typography variant='h5' align='center' className={classes.sucursalTitle}>REGISTRO DE PRODUCTOS</Typography>
+                        </IconButton>
+                    </Box>
+                    <Box className={classes.sucursalSpacing}>
+                        <IconButton onClick={() => navigate(`/maindrawer/clientes/${idSuc}`)}>
+                            <HomeWorkIcon className={classes.sucursalIcon} />
+                            <Typography variant='h5' align='center' className={classes.sucursalTitle}>CLIENTES</Typography>
+                        </IconButton>
+                    </Box>
+                    <Box className={classes.sucursalSpacing}>
+                        <IconButton onClick={() => navigate(`/maindrawer/libro-diario/${idSuc}`)}>
                             <HomeWorkIcon className={classes.sucursalIcon} />
                             <Typography variant='h5' align='center' className={classes.sucursalTitle}>CIERRE DE CAJA</Typography>
                         </IconButton>
                     </Box>
-                    <Box className={classes.sucursalSpacing}>
-                        <IconButton>
-                            <HomeWorkIcon className={classes.sucursalIcon} />
-                            <Typography variant='h5' align='center' className={classes.sucursalTitle}>BALANCES</Typography>
-                        </IconButton>
-                    </Box>
-                    <Box className={classes.sucursalSpacing}>
-                        <IconButton>
-                            <HomeWorkIcon className={classes.sucursalIcon} />
-                            <Typography variant='h5' align='center' className={classes.sucursalTitle}>PERFIL SUCURSAL</Typography>
-                        </IconButton>
-                    </Box>
-                    <img src={`https://quickchart.io/qr?text=${JSON.stringify(sucursal)}`} />
+                    {/* <img src={`https://quickchart.io/qr?text=${JSON.stringify(sucursal)}`} /> */}
                 </Grid>
             </>
 

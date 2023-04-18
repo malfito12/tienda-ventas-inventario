@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import EditSharpIcon from '@material-ui/icons/EditSharp';
 import LockSharpIcon from '@material-ui/icons/LockSharp';
 import LockOpenSharpIcon from '@material-ui/icons/LockOpenSharp';
+import PersonAddTwoToneIcon from '@material-ui/icons/PersonAddTwoTone';
 
 
 const ipcRenderer = window.require('electron').ipcRenderer
@@ -74,7 +75,7 @@ export function AddUser(props) {
     }
     return (
         <>
-            <Button onClick={openCloseModalAdd} size='small' className={classes.buttonSave} style={{ textTransform: 'capitalize' }}>Agregar Usuario</Button>
+            <Button onClick={openCloseModalAdd} variant='contained' endIcon={<PersonAddTwoToneIcon/>} size='small' className={classes.buttonSave} style={{ textTransform: 'capitalize' }}>Agregar Usuario</Button>
             <Dialog
                 open={openModal}
                 onClose={openCloseModalAdd}
@@ -255,7 +256,7 @@ export function EditUser(props) {
                                 ) : null}
                             </TextField>
                             <div style={{ marginTop: 15 }}>
-                                <Button endIcon={<SaveIcon />} type='submit' variant='contained' style={{ background: '#43a047', color: 'white' }} fullWidth>Registrar</Button>
+                                <Button endIcon={<SaveIcon />} type='submit' variant='contained' style={{ background: '#43a047', color: 'white',textTransform: 'capitalize' }} fullWidth>Guardar</Button>
                             </div>
                         </form>
                     </Grid>
@@ -266,7 +267,7 @@ export function EditUser(props) {
 }
 
 export function DeleteUser(props) {
-    console.log(props.data.user_status)
+    // console.log(props.data.user_status)
     const [openDrop, setOpenDrop] = useState(null)
     const openDropDown = (e) => {
         setOpenDrop(e.currentTarget)

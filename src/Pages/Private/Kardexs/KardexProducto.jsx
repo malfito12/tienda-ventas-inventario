@@ -23,7 +23,7 @@ export default function KardexProducto() {
             .then(resp => setKardex(JSON.parse(resp)))
             .catch(err => console.log(err))
     }
-    console.log(kardex)
+    // console.log(kardex)
     return (
         <Container>
             <Typography variant='h5' align='center' style={{ marginBottom: 20 }}>MOVIMIENTO DE PRODUCTOS</Typography>
