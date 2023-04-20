@@ -43,12 +43,12 @@ export function AddProduct(props) {
     setPreview(null)
   }
   const getUnidadMedida = async () => {
-    await ipcRenderer.invoke('get-all-unidad-medida')
+    await ipcRenderer.invoke('get-all-unidad-medida',idSuc)
       .then(resp => setUnidadMedida(JSON.parse(resp)))
       .catch(err => console.log(err))
   }
   const getType = async () => {
-    await ipcRenderer.invoke('get-all-type-product')
+    await ipcRenderer.invoke('get-all-type-product',idSuc)
       .then(resp => setType(JSON.parse(resp)))
       .catch(err => console.log(err))
   }

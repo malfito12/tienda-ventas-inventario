@@ -21,7 +21,7 @@ const ListViewUser = () => {
   return (
     <Container>
       <Typography variant='h5' className={classes.alignTextTitle}>Administrar Usuarios</Typography>
-      <AddUser getUsers={getAllUsers} />
+      <AddUser  getUsers={getAllUsers} />
       <TableContainer component={Paper}>
         <Table>
           <TableHead>

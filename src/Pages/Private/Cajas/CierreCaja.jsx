@@ -61,7 +61,7 @@ const CierreCaja = () => {
     { title: 'Tipo Producto', field: 'type_name' },
     { title: 'Tipo MV', field: 'move_id', render: (row) => row.move_id === 1 ? <div style={{ color: 'red' }}>Egreso</div> : <div style={{ color: '#43a047' }}>Ingreso</div> },
     { title: 'Cantidad', field: 'product_move_amount' },
-    { title: 'Monto Bs.', field: 'product_move_price' },
+    { title: 'Monto Bs.', field: 'product_move_price', render:(row)=><div>{row.product_move_price} Bs.</div> },
   ]
 
   const meses = [

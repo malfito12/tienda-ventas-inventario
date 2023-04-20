@@ -6,8 +6,8 @@ controller.postTypeProduct=async(e,args)=>{
     const params=args
     try {
         await conn.query(
-            `INSERT INTO product_types VALUES($1,$2,$3)`,
-            [params.type_name, new Date(),params.user_id]
+            `INSERT INTO product_types VALUES($1,$2,$3,$4)`,
+            [params.type_name, new Date(),params.user_id,params.sucursal_id]
         )
         return JSON.stringify({status:200,message:'Tipo de Producto Registrado Correctamente'})
     } catch (error) {
@@ -18,7 +18,7 @@ controller.postTypeProduct=async(e,args)=>{
 
 controller.getAllTypeProduct=async(e,args)=>{
     try {
-        const result=await conn.query(`SELECT * FROM product_types`)
+        const result=await conn.query(`SELECT * FROM product_types WHERE sucursal_id=$1 ORDER BY type_register_date ASC`,[args])
         return JSON.stringify(result.rows)
     } catch (error) {
         console.log(error)
@@ -28,7 +28,7 @@ controller.getAllTypeProduct=async(e,args)=>{
 controller.updateTypeProduct=async(e,args)=>{
     const params=args
     try {
-        await conn.query(`UPDATE product_types SET type_name=$1 WHERE type_id=$2`,[params.type_name,params.type_id])
+        await conn.query(`UPDATE product_types SET type_name=$1 WHERE type_id=$2 AND sucursal_id=$3`,[params.type_name,params.type_id,params.sucursal_id])
         return JSON.stringify({status:200,message:'Tipo de Producto Actualizado'})
     } catch (error) {
         console.log(error)

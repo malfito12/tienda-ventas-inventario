@@ -49,10 +49,10 @@ export default function LibroDiario() {
         { title: 'Fecha', field: 'to_char' },
         { title: 'Name', field: 'product_name' },
         { title: 'Tipo Producto', field: 'type_name' },
-        { title: 'Ingresos', field: 'move_id', render: (row) => <div>{row.move_id === 2 || row.move_id === 3 ? row.product_move_price : ''}</div> },
-        { title: 'Egresos', field: 'move_id', render: (row) => <div>{row.move_id === 4 ? row.product_move_price : ''}</div> },
+        { title: 'Ingresos', field: 'move_id', render: (row) => <div>{row.move_id === 2 || row.move_id === 3 ? `${row.product_move_price } Bs.`: ''}</div> },
+        { title: 'Egresos', field: 'move_id', render: (row) => <div>{row.move_id === 4 ? `${row.product_move_price} Bs.` : ''}</div> },
         { title: 'Cantidad', field: 'product_move_amount' },
-        { title: 'Total', field: 'total' },
+        { title: 'Total', field: 'total', render:(row)=><div>{row.total} Bs.</div> },
     ]
     const Toast = Swal.mixin({
         toast: true,

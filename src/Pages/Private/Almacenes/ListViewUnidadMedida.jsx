@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { emphasize, withStyles } from '@material-ui/core/styles';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Chip from '@material-ui/core/Chip';
@@ -7,6 +7,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, Container, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import {AddUnidadMedida,EditUnidadMedida,DeleteUnidadMedida} from '../../../Components/Molecules/Products/AddUnidadMedida';
+import { AuthContext } from '../../../Components/Atoms/AuthContext';
 const ipcRenderer = window.require('electron').ipcRenderer
 
 
@@ -29,6 +30,7 @@ const StyledBreadcrumb = withStyles((theme) => ({
 export default function ListViewUnidadMedida() {
     const navigate = useNavigate()
     const { id } = useParams()
+    const {idSuc}=useContext(AuthContext)
     const classes = useStyles()
     const [unidad, setUnidad] = useState([])
     useEffect(() => {
@@ -36,7 +38,7 @@ export default function ListViewUnidadMedida() {
     }, [])
 
     const getAllUnidadMedida = async () => {
-        await ipcRenderer.invoke('get-all-unidad-medida')
+        await ipcRenderer.invoke('get-all-unidad-medida',idSuc)
             .then(resp => setUnidad(JSON.parse(resp)))
             .catch(err => console.log(err))
     }

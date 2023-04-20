@@ -7,11 +7,24 @@ import { AuthContext } from '../../Atoms/AuthContext';
 const ipcRenderer = window.require('electron').ipcRenderer
 
 
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'bottom-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
+
 export function AddUnidadMedida(props) {
   const { user } = useContext(AuthContext)
   const name_unidad = useRef()
   const classes = useStyles()
   const [openModal, setOpenModal] = useState(false)
+  const {idSuc}=useContext(AuthContext)
 
   const openCloseModal = () => {
     setOpenModal(!openModal)
@@ -22,19 +35,19 @@ export function AddUnidadMedida(props) {
     e.preventDefault()
     const data = {
       u_medida_name: name_unidad.current.value,
-      // user_id:user
-      user_id: sessionStorage.getItem('user')
+      user_id: sessionStorage.getItem('user'),
+      sucursal_id:idSuc
     }
     // console.log(data)
     await ipcRenderer.invoke('post-unidad-medida', data)
       .then(resp => {
         const response = JSON.parse(resp)
         if (response.status === 300) {
-          Swal.fire('Error', response.message, 'error')
+          Toast.fire({ icon: 'error', title: response.message })
           openCloseModal()
           return
         }
-        Swal.fire('Success', response.message, 'success')
+        Toast.fire({ icon: 'success', title: response.message })
         openCloseModal()
         props.getUnidades()
         e.target.reset()
@@ -84,28 +97,20 @@ export function EditUnidadMedida(props) {
   const classes = useStyles()
   const name_unidad = useRef()
   // console.log(props.data)
+  const {idSuc}=useContext(AuthContext)
   const [openModal, setOpenModal] = useState(false)
 
   const openCloseModal = () => {
     setOpenModal(!openModal)
   }
-  const Toast = Swal.mixin({
-    toast: true,
-    position: 'bottom-end',
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.addEventListener('mouseenter', Swal.stopTimer)
-      toast.addEventListener('mouseleave', Swal.resumeTimer)
-    }
-  })
+  
   //-------------EDIT UNIDAD MEDIDA--------------
   const editUndiadMedida = async (e) => {
     e.preventDefault()
     const data = {
       u_medida_name: name_unidad.current.value,
-      u_medida_id: props.data.u_medida_id
+      u_medida_id: props.data.u_medida_id,
+      sucursal_id:idSuc
     }
     await ipcRenderer.invoke('update-unidad-medida', data)
       .then(resp => {

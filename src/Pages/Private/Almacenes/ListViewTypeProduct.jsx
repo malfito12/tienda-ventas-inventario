@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { emphasize, withStyles } from '@material-ui/core/styles';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Chip from '@material-ui/core/Chip';
 import HomeIcon from '@material-ui/icons/Home';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Container, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
-import AddTypeProduct from '../../../Components/Molecules/Products/AddTypeProduct';
+import { Button, Container, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@material-ui/core';
+import {AddTypeProduct, DeleteType, EditTypeProduct} from '../../../Components/Molecules/Products/AddTypeProduct';
+import { AuthContext } from '../../../Components/Atoms/AuthContext';
 const ipcRenderer = window.require('electron').ipcRenderer
 
 
@@ -28,6 +29,7 @@ const StyledBreadcrumb = withStyles((theme) => ({
 
 export default function ListViewTypeProduct() {
     const navigate = useNavigate()
+    const {idSuc}=useContext(AuthContext)
     const { id } = useParams()
     const classes = useStyles()
     const [type, setType] = useState([])
@@ -36,7 +38,7 @@ export default function ListViewTypeProduct() {
     }, [])
 
     const getAllUnidadMedida = async () => {
-        await ipcRenderer.invoke('get-all-type-product')
+        await ipcRenderer.invoke('get-all-type-product',idSuc)
             .then(resp => setType(JSON.parse(resp)))
             .catch(err => console.log(err))
     }
@@ -66,8 +68,12 @@ export default function ListViewTypeProduct() {
                                     <TableCell>{index + 1}</TableCell>
                                     <TableCell>{e.type_name}</TableCell>
                                     <TableCell>
-                                        <Button color='primary'>edit</Button>
-                                        <Button color='secondary'>delete</Button>
+                                        <Tooltip title='Actualizar'>
+                                            <EditTypeProduct data={e} getType={getAllUnidadMedida} />
+                                        </Tooltip>
+                                        <Tooltip title='Eliminar'>
+                                            <DeleteType data={e} getType={getAllUnidadMedida} />
+                                        </Tooltip>
                                     </TableCell>
                                 </TableRow>
                             ))

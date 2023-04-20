@@ -24,6 +24,7 @@ const Toast = Swal.mixin({
 })
 // se requiere personal de telecomunicaciones 63201893
 export function AddUser(props) {
+    // console.log(props.nose)
     const classes = useStyles()
     const [openModal, setOpenModal] = useState(false)
     const [rols, setRols] = useState([])

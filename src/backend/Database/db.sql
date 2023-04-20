@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS clients(
     client_name VARCHAR(30) NOT NULL,
     client_surname_p VARCHAR(15) NOT NULL,
     client_surname_m VARCHAR(15) NOT NULL,
-    client_ci VARCHAR (15) NOT NULL,
+    client_ci VARCHAR (15) NOT NULL UNIQUE,
     client_phone VARCHAR(15) NOT NULL,
     client_address VARCHAR(50) NOT NULL,
     client_register_date DATE NOT NULL,
@@ -48,16 +48,20 @@ CREATE TABLE IF NOT EXISTS u_medidas(
     u_medida_name VARCHAR(50) NOT NULL,
     u_medida_register_date DATE NOT NULL,
     user_id INT NOT NULL,
+    sucursal_id INT NOT NULL,
     u_medida_id SERIAL PRIMARY KEY,
-    CONSTRAINT pk_users FOREIGN KEY (user_id) REFERENCES users(user_id)
+    CONSTRAINT pk_users FOREIGN KEY (user_id) REFERENCES users(user_id),
+    CONSTRAINT pk_sucursales FOREIGN KEY (sucursal_id) REFERENCES sucursales(sucursal_id)
 );
 
 CREATE TABLE IF NOT EXISTS product_types(
     type_name VARCHAR(50) NOT NULL,
     type_register_date DATE NOT NULL,
     user_id INT NOT NULL,
+    sucursal_id INT NOT NULL,
     type_id SERIAL PRIMARY KEY,
-    CONSTRAINT pk_users FOREIGN KEY (user_id) REFERENCES users(user_id)
+    CONSTRAINT pk_users FOREIGN KEY (user_id) REFERENCES users(user_id),
+    CONSTRAINT pk_sucursales FOREIGN KEY (sucursal_id) REFERENCES sucursales(sucursal_id)
 );
 
 

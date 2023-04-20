@@ -7,8 +7,8 @@ controller.postUnidadMedida=async(e,args)=>{
     // console.log(params)
     try {
         await conn.query(
-            `INSERT INTO u_medidas VALUES($1,$2,$3)`,
-            [params.u_medida_name, new Date(),params.user_id]
+            `INSERT INTO u_medidas VALUES($1,$2,$3,$4)`,
+            [params.u_medida_name, new Date(),params.user_id,params.sucursal_id]
         )
         return JSON.stringify({status:200,message:'Unidad de Medida Registrado Correctamente'})
     } catch (error) {
@@ -19,7 +19,7 @@ controller.postUnidadMedida=async(e,args)=>{
 
 controller.getAllUnidadMedida=async(e,args)=>{
     try {
-        const result=await conn.query(`SELECT * FROM u_medidas`)
+        const result=await conn.query(`SELECT * FROM u_medidas WHERE sucursal_id=$1 ORDER BY u_medida_register_date ASC`,[args])
         return JSON.stringify(result.rows)
     } catch (error) {
         console.log(error)
@@ -29,7 +29,7 @@ controller.getAllUnidadMedida=async(e,args)=>{
 controller.updateUnidadMedida=async(e,args)=>{
     const params=args
     try {
-        await conn.query(`UPDATE u_medidas SET u_medida_name=$1 WHERE u_medida_id=$2`,[params.u_medida_name,params.u_medida_id])
+        await conn.query(`UPDATE u_medidas SET u_medida_name=$1 WHERE u_medida_id=$2 AND sucursal_id=$3`,[params.u_medida_name,params.u_medida_id,params.sucursal_id])
         return JSON.stringify({status:200,message:'Unidad de Medida Actualizado'})
     } catch (error) {
         console.log(error)

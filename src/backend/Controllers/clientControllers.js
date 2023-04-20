@@ -5,7 +5,7 @@ const conn = dbConnection()
 controllers.registerClient = async (e, args) => {
     const params = args
     try {
-        conn.query(`INSERT INTO clients VALUES($1,$2,$3,$4,$5,$6,$7,$8)`,
+        await conn.query(`INSERT INTO clients VALUES($1,$2,$3,$4,$5,$6,$7,$8)`,
             [
                 params.client_name,
                 params.client_surname_p,
@@ -29,6 +29,39 @@ controllers.getAllClients = async (e, args) => {
         return JSON.stringify(result.rows)
     } catch (error) {
         console.log(error)
+    }
+}
+
+controllers.updateClient = async (e, args) => {
+    const params = args
+    // console.log(args)
+    try {
+        await conn.query(
+            `UPDATE clients 
+            SET client_name=$1, client_surname_p=$2, client_surname_m=$3, client_ci=$4, client_phone=$5, client_address=$6
+            WHERE client_id=$7`,
+            [
+                params.client_name,
+                params.client_surname_p,
+                params.client_surname_m,
+                params.client_ci,
+                params.client_phone,
+                params.client_address,
+                params.client_id,
+            ]
+        )
+        return JSON.stringify({status:200,message:'Datos Actualizados Correctamente'})
+    } catch (error) {
+        return JSON.stringify({status:300, message:'Error, El Numero de Cedual de Indentidad ya se encuentra Registrado'})
+    }
+}
+
+controllers.deleteClient=async(e,args)=>{
+    try {
+        await conn.query(`DELETE FROM clients WHERE client_id=$1`,[args])
+        return JSON.stringify({status:200,message:'Cliente eliminado'})
+    } catch (error) {
+        return JSON.stringify({status:300,message:'Error, Nose Pudo Eliminar'})
     }
 }
 
@@ -58,8 +91,8 @@ controllers.imprimirRecibo = async (e, args) => {
             `SELECT p.product_venta_price FROM product_ventas p WHERE p.product_venta_code=$1 AND sucursal_id=$2`,
             [params.code, params.sucursal_id]
         )
-        const data={data:result.rows,precio_venta:result2.rows[0].product_venta_price}
-        if (result.rowCount > 0 && result2.rowCount>0) {
+        const data = { data: result.rows, precio_venta: result2.rows[0].product_venta_price }
+        if (result.rowCount > 0 && result2.rowCount > 0) {
             return JSON.stringify({ status: 200, data: data })
         }
         return JSON.stringify({ status: 300, message: 'Error, No existen datos' })
