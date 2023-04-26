@@ -127,7 +127,7 @@ export function EditUnidadMedida(props) {
   }
   return (
     <>
-      <Button onClick={openCloseModal} size='small' color='primary'>edit</Button>
+      <Button onClick={openCloseModal} size='small' color='primary' style={{textTransform: 'capitalize'}}>Actualizar</Button>
       <Dialog
         open={openModal}
         onClose={openCloseModal}
@@ -207,7 +207,7 @@ export function DeleteUnidadMedida(props) {
   }
   return (
     <>
-      <Button onClick={()=>openCloseModalDelete(props.data.u_medida_id)} size='small' color='secondary'>delete</Button>
+      <Button onClick={()=>openCloseModalDelete(props.data.u_medida_id)} size='small' color='secondary' style={{textTransform: 'capitalize'}}>Eliminar</Button>
     </>
   )
 }

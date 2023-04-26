@@ -3,12 +3,12 @@ import React, { useContext, useRef, useState } from 'react'
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../Components/Atoms/AuthContext';
 
+const ipcRenderer = window.require('electron').ipcRenderer
+
 const Login = () => {
-    const {login}=useContext(AuthContext)
-    const navigate=useNavigate()
+    const { secondLogin,rolUser } = useContext(AuthContext)
     const classes = useStyles()
     const [viewPass, setViewPass] = useState(false)
     const userName = useRef()
@@ -23,7 +23,24 @@ const Login = () => {
             user_name: userName.current.value,
             user_pass: userPass.current.value
         }
-        login(data)
+        try {
+            await ipcRenderer.invoke('login', data)
+                .then(resp => {
+                    var response = JSON.parse(resp)
+                    if (response.status === 300) {
+                        Swal.fire('Error', response.message, 'error')
+                        return
+                    }
+                    secondLogin()
+                    rolUser(response.rol_name)
+                    window.sessionStorage.setItem('user', response.user_id)
+                    window.sessionStorage.setItem('user_name', response.people_name)
+                })
+        } catch (error) {
+            Swal.fire('Error', error, 'error')
+            console.log(error)
+        }
+        // login(data)
         // navigate('/home')
 
     }

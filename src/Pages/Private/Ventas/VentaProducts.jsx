@@ -49,9 +49,9 @@ export const VentaProducts = () => {
     cantidad: '',
     price: '',
     product_price: '',
-    type_amount:''
+    type_amount: ''
   })
-  const reChangeData = {product_price: '', product_name: '', product_amount: '', cantidad: '', price: '' }
+  const reChangeData = { product_price: '', product_name: '', product_amount: '', cantidad: '', price: '' }
   useEffect(() => {
     getAllProducts()
   }, [])
@@ -133,7 +133,7 @@ export const VentaProducts = () => {
     } else if (precioVenta.current.value === '0') {
       Toast.fire({ icon: 'error', title: 'Error, El Precio de Venta esta en 0, coloque un valor' })
       return
-    }else if(client.length===0){
+    } else if (client.length === 0) {
       Toast.fire({ icon: 'error', title: 'Error, No existen datos del cliente, presione buscar' })
       return
     }
@@ -259,7 +259,7 @@ export const VentaProducts = () => {
     } else if (changeData.type_amount === 'Unidad') {
       cant = parseFloat(changeData.cantidad) * parseFloat(changeData.product_price_unit)
     }
-    setChangeData({...changeData,price:cant.toFixed(2)})
+    setChangeData({ ...changeData, price: cant.toFixed(2) })
   }
 
   //---------------------HANLDE CHANGE TIPO DE CANTIDAD---------------------
@@ -278,10 +278,10 @@ export const VentaProducts = () => {
     <>
       <Container maxWidth={false}>
         <Breadcrumbs className={classes.spacingBread}>
-          <StyledBreadcrumb label="Realizar Venta" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/maindrawer/ventas/${id}`)} />
-          <StyledBreadcrumb label="Registro de Ventas" onClick={() => navigate(`/maindrawer/lista-ventas/${id}`)} />
+          <StyledBreadcrumb label="Realizar Venta" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/home/maindrawer/ventas/${id}`)} />
+          <StyledBreadcrumb label="Registro de Ventas" onClick={() => navigate(`/home/maindrawer/lista-ventas/${id}`)} />
         </Breadcrumbs>
-        <Grid style={{ marginTop: 20, marginBottom: 40 }} container justifyContent='flex-end' alignItems='center'>
+        <Grid style={{ marginTop: 20, marginBottom: 10 }} container justifyContent='flex-end' alignItems='center'>
           <Typography variant='subtitle1' style={{ marginRight: 10 }} >Buscar</Typography>
           <TextField
             variant='outlined'
@@ -385,27 +385,27 @@ export const VentaProducts = () => {
             </Paper>
           </Grid>
           <Grid item xs={12} sm={7}>
-            <TableContainer component={Paper}>
-              <Table>
+            <TableContainer component={Paper} style={{ maxHeight: 400 }}>
+              <Table stickyHeader>
                 <TableHead>
                   <TableRow>
-                    <TableCell>N°</TableCell>
-                    <TableCell>Imagen</TableCell>
-                    <TableCell>Codigo</TableCell>
-                    <TableCell>Descripcion</TableCell>
-                    <TableCell>Stock</TableCell>
-                    <TableCell>Acciones</TableCell>
+                    <TableCell className={classes.colorHead}>N°</TableCell>
+                    <TableCell className={classes.colorHead}>Imagen</TableCell>
+                    <TableCell className={classes.colorHead}>Codigo</TableCell>
+                    <TableCell className={classes.colorHead}>Descripcion</TableCell>
+                    <TableCell className={classes.colorHead}>Stock</TableCell>
+                    <TableCell className={classes.colorHead}>Acciones</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {products.length > 0 ? (
                     products.filter(buscarProducto(buscador)).map((e, index) => (
                       <TableRow key={index}>
-                        <TableCell>{index + 1}</TableCell>
-                        <TableCell size='small'><img src={e.product_image} style={{ width: '50px', height: '50px' }} alt='#' /></TableCell>
-                        <TableCell>{e.product_code}</TableCell>
-                        <TableCell>{e.product_name}</TableCell>
-                        <TableCell width={20}><Paper style={
+                        <TableCell size='small'>{index + 1}</TableCell>
+                        <TableCell size='small'><img src={e.product_image} style={{ width: '50px', height: '50px',borderRadius:25 }} alt='#' /></TableCell>
+                        <TableCell size='small'>{e.product_code}</TableCell>
+                        <TableCell size='small'>{e.product_name}</TableCell>
+                        <TableCell size='small' width={20}><Paper style={
                           e.stock > 50
                             ? { background: '#43a047', color: 'white', padding: 5 }
                             : e.stock > 25 && e.stock <= 50
@@ -414,7 +414,7 @@ export const VentaProducts = () => {
                                 ? { background: '#f44336', color: 'white', padding: 5 }
                                 : null
                         }>{e.stock}</Paper></TableCell>
-                        <TableCell>
+                        <TableCell size='small'>
                           {e.stock > 0 ? (
                             <Button onClick={() => agregar(e)} size='small' endIcon={<LocalGroceryStoreIcon />} variant='outlined' style={{ background: '#2196f3', color: 'white', textTransform: 'capitalize' }}>Agregar</Button>
                           ) : (
@@ -508,5 +508,10 @@ const useStyles = makeStyles((theme) => ({
     background: '#43a047',
     color: 'white',
     marginBottom: 20,
+  },
+  colorHead: {
+    background: '#424242',
+    color: 'white',
+    padding: 13
   }
 }))

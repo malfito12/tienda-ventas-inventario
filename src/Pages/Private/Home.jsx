@@ -4,6 +4,7 @@ import HomeWorkIcon from '@material-ui/icons/HomeWork';
 import { useNavigate } from 'react-router-dom';
 import MainAppBar from '../../Components/Molecules/MainAppBar';
 import AddCircleSharpIcon from '@material-ui/icons/AddCircleSharp';
+import ApartmentIcon from '@material-ui/icons/Apartment';
 import { AuthContext } from '../../Components/Atoms/AuthContext';
 const ipcRenderer = window.require('electron').ipcRenderer
 
@@ -38,11 +39,11 @@ const Home = () => {
     }
   }
   const asigIdSuc=(id)=>{
-    navigate(`/maindrawer/sucursal/${id}`)
+    navigate(`/home/maindrawer/sucursal/${id}`)
     setIdSucursal(id)
   }
   return (
-    <>
+    <div className='otro'>
       <MainAppBar menu={handleDrawerToggle} />
       <div className={classes.toolbar} />
       <Container>
@@ -51,23 +52,23 @@ const Home = () => {
             sucursales.map((e, index) => (
               <Box key={index} className={classes.sucursalSpacing}>
                 <IconButton onClick={()=>asigIdSuc(e.sucursal_id)}>
-                  <HomeWorkIcon className={classes.sucursalIcon} />
-                  <Typography variant='h5' align='center' className={classes.sucursalTitle}>{e.sucursal_name}</Typography>
+                  <ApartmentIcon style={{color:'#424242'}} className={classes.sucursalIcon} />
+                  <Typography style={{color:'#e0e0e0'}} variant='h5' align='center' className={classes.sucursalTitle}>{e.sucursal_name}</Typography>
                 </IconButton>
               </Box>
             ))
 
           ) : (null)}
           <Box className={classes.sucursalSpacing}>
-            <IconButton onClick={() => navigate(`/registro-sucursal`)}>
-              <AddCircleSharpIcon className={classes.sucursalIcon} />
-              <Typography variant='h5' align='center' className={classes.sucursalTitle}>Registro Sucursal</Typography>
+            <IconButton onClick={() => navigate(`/home/registro-sucursal`)}>
+              <AddCircleSharpIcon style={{color:'#424242'}} className={classes.sucursalIcon} />
+              <Typography style={{color:'#e0e0e0'}} variant='h5' align='center' className={classes.sucursalTitle}>Registro Sucursal</Typography>
             </IconButton>
           </Box>
 
         </Grid>
       </Container>
-    </>
+    </div>
   )
 }
 

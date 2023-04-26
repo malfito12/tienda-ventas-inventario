@@ -4,6 +4,11 @@ import HomeWorkIcon from '@material-ui/icons/HomeWork';
 import { useNavigate, useParams } from 'react-router-dom'
 import { AuthContext } from '../../../Components/Atoms/AuthContext';
 import QuickChart from 'quickchart-js'
+import StoreIcon from '@material-ui/icons/Store';
+import LocalGroceryStoreIcon from '@material-ui/icons/LocalGroceryStore';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+import NaturePeopleIcon from '@material-ui/icons/NaturePeople';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
 const ipcRenderer = window.require('electron').ipcRenderer
 
 
@@ -29,43 +34,43 @@ const ViewSucursal = () => {
         }
     }
     const navigationAlmacen = () => {
-        navigate(`/maindrawer/almacen/${idSuc}`)
+        navigate(`/home/maindrawer/almacen/${idSuc}`)
     }
     const myChart = new QuickChart()
     return (
         <Container>{sucursal.length > 0 ? (
             <>
-                <Typography align='center' variant='h4'>{sucursal[0].sucursal_name}</Typography>
+                <Typography style={{color:'#e0e0e0', marginBottom:15}} align='center' variant='h4'>Sucursal {sucursal[0].sucursal_name}</Typography>
                 <Grid container direction='row' justifyContent='center' alignItems='center'>
-                    <Box className={classes.sucursalSpacing}>
+                    <Box  className={classes.sucursalSpacing}>
                         {/* <IconButton onClick={navigation}> */}
-                        <IconButton onClick={navigationAlmacen}>
-                            <HomeWorkIcon className={classes.sucursalIcon} />
-                            <Typography variant='h5' align='center' className={classes.sucursalTitle}>ALMACEN</Typography>
+                        <IconButton style={{background:'#9e9e9e'}} onClick={navigationAlmacen}>
+                            <StoreIcon style={{color:'#424242'}} className={classes.sucursalIcon} />
+                            <Typography style={{color:'#e0e0e0'}} variant='h5' align='center' className={classes.sucursalTitle}>ALMACEN</Typography>
                         </IconButton>
                     </Box>
                     <Box className={classes.sucursalSpacing}>
-                        <IconButton onClick={() => navigate(`/maindrawer/ventas/${idSuc}`)}>
-                            <HomeWorkIcon className={classes.sucursalIcon} />
-                            <Typography variant='h5' align='center' className={classes.sucursalTitle}>VENTA DE PRODUCTOS</Typography>
+                        <IconButton style={{background:'#9e9e9e'}} onClick={() => navigate(`/home/maindrawer/ventas/${idSuc}`)}>
+                            <LocalGroceryStoreIcon style={{color:'#424242'}} className={classes.sucursalIcon} />
+                            <Typography style={{color:'#e0e0e0'}} variant='h5' align='center' className={classes.sucursalTitle}>VENTA DE PRODUCTOS</Typography>
                         </IconButton>
                     </Box>
                     <Box className={classes.sucursalSpacing}>
-                        <IconButton onClick={() => navigate(`/maindrawer/registro-producto/${idSuc}`)}>
-                            <HomeWorkIcon className={classes.sucursalIcon} />
-                            <Typography variant='h5' align='center' className={classes.sucursalTitle}>REGISTRO DE PRODUCTOS</Typography>
+                        <IconButton style={{background:'#9e9e9e'}} onClick={() => navigate(`/home/maindrawer/registro-producto/${idSuc}`)}>
+                            <AddBoxIcon style={{color:'#424242'}} className={classes.sucursalIcon} />
+                            <Typography style={{color:'#e0e0e0'}} variant='h5' align='center' className={classes.sucursalTitle}>REGISTRO DE PRODUCTOS</Typography>
                         </IconButton>
                     </Box>
                     <Box className={classes.sucursalSpacing}>
-                        <IconButton onClick={() => navigate(`/maindrawer/clientes/${idSuc}`)}>
-                            <HomeWorkIcon className={classes.sucursalIcon} />
-                            <Typography variant='h5' align='center' className={classes.sucursalTitle}>CLIENTES</Typography>
+                        <IconButton style={{background:'#9e9e9e'}} onClick={() => navigate(`/home/maindrawer/clientes/${idSuc}`)}>
+                            <NaturePeopleIcon style={{color:'#424242'}} className={classes.sucursalIcon} />
+                            <Typography style={{color:'#e0e0e0'}} variant='h5' align='center' className={classes.sucursalTitle}>CLIENTES</Typography>
                         </IconButton>
                     </Box>
                     <Box className={classes.sucursalSpacing}>
-                        <IconButton onClick={() => navigate(`/maindrawer/libro-diario/${idSuc}`)}>
-                            <HomeWorkIcon className={classes.sucursalIcon} />
-                            <Typography variant='h5' align='center' className={classes.sucursalTitle}>CIERRE DE CAJA</Typography>
+                        <IconButton style={{background:'#9e9e9e'}} onClick={() => navigate(`/home/maindrawer/libro-diario/${idSuc}`)}>
+                            <CheckBoxIcon style={{color:'#424242'}} className={classes.sucursalIcon} />
+                            <Typography style={{color:'#e0e0e0'}} variant='h5' align='center' className={classes.sucursalTitle}>CIERRE DE CAJA</Typography>
                         </IconButton>
                     </Box>
                     {/* <img src={`https://quickchart.io/qr?text=${JSON.stringify(sucursal)}`} /> */}

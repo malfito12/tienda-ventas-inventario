@@ -45,29 +45,29 @@ export default function ListViewTypeProduct() {
     return (
         <Container>
             <Breadcrumbs className={classes.spacingBread}>
-                <StyledBreadcrumb label="Productos" onClick={() => navigate(`/maindrawer/almacen/${id}`)} />
-                <StyledBreadcrumb label="Tipo de Producto" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/maindrawer/tipo-producto/${id}`)} />
-                <StyledBreadcrumb label="Unidad de Medida" onClick={() => navigate(`/maindrawer/unidad-medida/${id}`)} />
+                <StyledBreadcrumb label="Productos" onClick={() => navigate(`/home/maindrawer/almacen/${id}`)} />
+                <StyledBreadcrumb label="Tipo de Producto" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/home/maindrawer/tipo-producto/${id}`)} />
+                <StyledBreadcrumb label="Unidad de Medida" onClick={() => navigate(`/home/maindrawer/unidad-medida/${id}`)} />
             </Breadcrumbs>
             <div align='right'>
                 <AddTypeProduct getType={getAllUnidadMedida} />
             </div>
-            <TableContainer component={Paper}   >
-                <Table>
+            <TableContainer component={Paper} style={{ maxHeight: 500 }}  >
+                <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <TableCell>N°</TableCell>
-                            <TableCell>Nombre Tipo Producto</TableCell>
-                            <TableCell>Acciones</TableCell>
+                            <TableCell className={classes.colorHead}>N°</TableCell>
+                            <TableCell className={classes.colorHead}>Nombre Tipo Producto</TableCell>
+                            <TableCell className={classes.colorHead}>Acciones</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {type.length > 0 ? (
                             type.map((e, index) => (
                                 <TableRow key={index}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{e.type_name}</TableCell>
-                                    <TableCell>
+                                    <TableCell size='small'>{index + 1}</TableCell>
+                                    <TableCell size='small'>{e.type_name}</TableCell>
+                                    <TableCell size='small'>
                                         <Tooltip title='Actualizar'>
                                             <EditTypeProduct data={e} getType={getAllUnidadMedida} />
                                         </Tooltip>
@@ -93,5 +93,10 @@ const useStyles = makeStyles((theme) => ({
         background: '#43a047',
         color: 'white',
         marginBottom: 20,
-    }
+    },
+    colorHead:{
+        background:'#424242',
+        color:'white',
+        padding:13
+      }
 }))

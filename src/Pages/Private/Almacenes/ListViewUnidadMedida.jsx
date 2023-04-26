@@ -46,29 +46,29 @@ export default function ListViewUnidadMedida() {
     return (
         <Container>
             <Breadcrumbs className={classes.spacingBread}>
-                <StyledBreadcrumb label="Productos" onClick={() => navigate(`/maindrawer/almacen/${id}`)} />
-                <StyledBreadcrumb label="Tipo de Producto" onClick={() => navigate(`/maindrawer/tipo-producto/${id}`)} />
-                <StyledBreadcrumb label="Unidad de Medida" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/maindrawer/unidad-medida/${id}`)} />
+                <StyledBreadcrumb label="Productos" onClick={() => navigate(`/home/maindrawer/almacen/${id}`)} />
+                <StyledBreadcrumb label="Tipo de Producto" onClick={() => navigate(`/home/maindrawer/tipo-producto/${id}`)} />
+                <StyledBreadcrumb label="Unidad de Medida" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/home/maindrawer/unidad-medida/${id}`)} />
             </Breadcrumbs>
             <div align='right'>
                 <AddUnidadMedida getUnidades={getAllUnidadMedida}/>
             </div>
-            <TableContainer component={Paper}   >
-                <Table>
+            <TableContainer component={Paper} style={{ maxHeight: 500 }}  >
+                <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <TableCell>N°</TableCell>
-                            <TableCell>Nombre Unidad Medida</TableCell>
-                            <TableCell>Acciones</TableCell>
+                            <TableCell className={classes.colorHead}>N°</TableCell>
+                            <TableCell className={classes.colorHead}>Nombre Unidad Medida</TableCell>
+                            <TableCell className={classes.colorHead}>Acciones</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {unidad.length > 0 ? (
                             unidad.map((e, index) => (
                                 <TableRow key={index}>
-                                    <TableCell>{index+1}</TableCell>
-                                    <TableCell>{e.u_medida_name}</TableCell>
-                                    <TableCell>
+                                    <TableCell size='small'>{index+1}</TableCell>
+                                    <TableCell size='small'>{e.u_medida_name}</TableCell>
+                                    <TableCell size='small'>
                                         <EditUnidadMedida data={e} getUnidad={getAllUnidadMedida}/>
                                         <DeleteUnidadMedida data={e} getUnidad={getAllUnidadMedida} />
                                     </TableCell>
@@ -91,5 +91,10 @@ const useStyles = makeStyles((theme) => ({
         background: '#43a047',
         color: 'white',
         marginBottom: 20,
-    }
+    },
+    colorHead:{
+        background:'#424242',
+        color:'white',
+        padding:13
+      }
 }))

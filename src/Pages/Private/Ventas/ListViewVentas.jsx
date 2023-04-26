@@ -127,8 +127,8 @@ export default function ListViewVentas() {
     return (
         <Container maxWidth={false}>
             <Breadcrumbs className={classes.spacingBread}>
-                <StyledBreadcrumb label="Realizar Venta" onClick={() => navigate(`/maindrawer/ventas/${id}`)} />
-                <StyledBreadcrumb label="Registro de Ventas" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/maindrawer/lista-ventas/${id}`)} />
+                <StyledBreadcrumb label="Realizar Venta" onClick={() => navigate(`/home/maindrawer/ventas/${id}`)} />
+                <StyledBreadcrumb label="Registro de Ventas" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/home/maindrawer/lista-ventas/${id}`)} />
             </Breadcrumbs>
             <Container maxWidth='md'>
                 {lista.length > 0 ? (
@@ -147,7 +147,9 @@ export default function ListViewVentas() {
                             </Grid>
                         </Paper>
                     ))
-                ) : (null)}
+                ) : (
+                    <Typography align='center' variant='h6'>No existen registro de ventas esta semana</Typography>
+                )}
             </Container>
         </Container>
     )

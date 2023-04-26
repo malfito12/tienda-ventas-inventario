@@ -143,10 +143,10 @@ const CierreCaja = () => {
     <>
       <Container>
         <Breadcrumbs className={classes.spacingBread}>
-          <StyledBreadcrumb label="Movimiento Semana" onClick={() => navigate(`/maindrawer/libro-diario/${id}`)} />
-          <StyledBreadcrumb label="Movimiento Mes" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/maindrawer/cierre-caja/${id}`)} />
-          <StyledBreadcrumb label="Busqueda Semana" onClick={() => navigate(`/maindrawer/balance-semana/${id}`)} />
-          <StyledBreadcrumb label="Busqueda Mes" onClick={() => navigate(`/maindrawer/balance-mes/${id}`)} />
+          <StyledBreadcrumb label="Movimiento Semana" onClick={() => navigate(`/home/maindrawer/libro-diario/${id}`)} />
+          <StyledBreadcrumb label="Movimiento Mes" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/home/maindrawer/cierre-caja/${id}`)} />
+          <StyledBreadcrumb label="Busqueda Semana" onClick={() => navigate(`/home/maindrawer/balance-semana/${id}`)} />
+          <StyledBreadcrumb label="Busqueda Mes" onClick={() => navigate(`/home/maindrawer/balance-mes/${id}`)} />
         </Breadcrumbs>
         <MaterialTable
           title='Reporte de Movimientos'

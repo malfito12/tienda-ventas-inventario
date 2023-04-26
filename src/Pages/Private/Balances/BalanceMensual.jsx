@@ -86,10 +86,10 @@ export default function BalanceMensual() {
   return (
     <Container>
       <Breadcrumbs className={classes.spacingBread}>
-        <StyledBreadcrumb label="Movimiento Semana" onClick={() => navigate(`/maindrawer/libro-diario/${id}`)} />
-        <StyledBreadcrumb label="Movimiento Mes" onClick={() => navigate(`/maindrawer/cierre-caja/${id}`)} />
-        <StyledBreadcrumb label="Busqueda Semana" onClick={() => navigate(`/maindrawer/balance-semana/${id}`)} />
-        <StyledBreadcrumb label="Busqueda Mes" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/maindrawer/balance-mes/${id}`)} />
+        <StyledBreadcrumb label="Movimiento Semana" onClick={() => navigate(`/home/maindrawer/libro-diario/${id}`)} />
+        <StyledBreadcrumb label="Movimiento Mes" onClick={() => navigate(`/home/maindrawer/cierre-caja/${id}`)} />
+        <StyledBreadcrumb label="Busqueda Semana" onClick={() => navigate(`/home/maindrawer/balance-semana/${id}`)} />
+        <StyledBreadcrumb label="Busqueda Mes" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/home/maindrawer/balance-mes/${id}`)} />
       </Breadcrumbs>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={4}>
@@ -128,24 +128,24 @@ export default function BalanceMensual() {
           </Paper>
         </Grid>
         <Grid item xs={12} sm={8}>
-          <TableContainer component={Paper} style={{ marginBottom: 15 }}>
-            <Table>
+          <TableContainer component={Paper} style={{ marginBottom: 15,maxHeight: 500 }}>
+            <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell>Fecha</TableCell>
-                  <TableCell>Descripcion</TableCell>
-                  <TableCell>Tipo MV</TableCell>
-                  <TableCell>Saldo</TableCell>
+                  <TableCell className={classes.colorHead}>Fecha</TableCell>
+                  <TableCell className={classes.colorHead}>Descripcion</TableCell>
+                  <TableCell className={classes.colorHead}>Tipo MV</TableCell>
+                  <TableCell className={classes.colorHead}>Saldo</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {libro.length > 0 ? (
                   libro.map((e, index) => (
                     <TableRow key={index}>
-                      <TableCell>{e.register_date}</TableCell>
-                      <TableCell>{e.product_name} {e.type_product === 'Registro de Semana' ? '' : ` - ${e.type_product}`}</TableCell>
-                      {e.type_move === 1 ? <TableCell style={{ color: 'red' }}>Egreso</TableCell> : <TableCell style={{ color: '#43a047' }}>Ingreso</TableCell>}
-                      <TableCell>{e.total}</TableCell>
+                      <TableCell size='small'>{e.register_date}</TableCell>
+                      <TableCell size='small'>{e.product_name} {e.type_product === 'Registro de Semana' ? '' : ` - ${e.type_product}`}</TableCell>
+                      {e.type_move === 1 ? <TableCell size='small' style={{ color: 'red' }}>Egreso</TableCell> : <TableCell size='small' style={{ color: '#43a047' }}>Ingreso</TableCell>}
+                      <TableCell size='small'>{e.total}</TableCell>
                     </TableRow>
                   ))
                 ) : (
@@ -183,7 +183,12 @@ const useStyles = makeStyles((theme) => ({
     background: '#43a047',
     color: 'white',
     marginBottom: 20,
-  }
+  },
+  colorHead: {
+    background: '#424242',
+    color: 'white',
+    padding: 13
+}
 }))
 
 

@@ -1,11 +1,16 @@
 /* body {
     background: #8e9eab;
 } */
-.otro{
-    background: #e0e0e0;
+.otro {
+    background: #1e130c;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #9a8478, #1e130c);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #9a8478, #1e130c); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+
     min-height: 100vh;
 }
-.otro2{
+
+.otro2 {
     background: #e0e0e0;
     min-height: 100vh;
 }

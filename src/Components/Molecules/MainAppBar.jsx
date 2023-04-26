@@ -8,7 +8,7 @@ const drawerWidth = 60;
 const MainAppBar = (props) => {
     let location = useLocation()
     const classes = useStyles()
-    const { logout } = useContext(AuthContext)
+    const { logout,secondLoguot } = useContext(AuthContext)
     const [openDrop, setOpenDrop] = useState(null)
 
     const handleDrawerToggle = () => {
@@ -22,7 +22,8 @@ const MainAppBar = (props) => {
         setOpenDrop(null)
     }
     const cerrarSesion = () => {
-        logout()
+        secondLoguot()
+        // logout()
         closeDropDown()
 
     }
@@ -34,7 +35,7 @@ const MainAppBar = (props) => {
                 className={
                     location.pathname === '/home'
                         ? null
-                        : location.pathname === '/registro-sucursal'
+                        : location.pathname === '/home/registro-sucursal'
                             ? null
                             : classes.appBar
                 }
@@ -52,6 +53,7 @@ const MainAppBar = (props) => {
                         <Typography variant="h6" noWrap>Sucursales</Typography>
                     </NavLink>
                     <div style={{ flexGrow: 1}} />
+                    <Typography>{window.sessionStorage.getItem('user_name')}</Typography>
                     <IconButton style={{color:'white'}} onClick={openDropDown}>
                         <AccountCircleIcon />
                     </IconButton>

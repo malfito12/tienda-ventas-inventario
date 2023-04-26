@@ -1,4 +1,4 @@
-import { Breadcrumbs, Button, Chip, Container, emphasize, Grid, InputLabel, makeStyles, MenuItem, TextField, withStyles } from '@material-ui/core'
+import { Breadcrumbs, Button, Chip, Container, emphasize, Grid, InputLabel, makeStyles, MenuItem, TextField, Typography, withStyles } from '@material-ui/core'
 import React, { useContext, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -52,28 +52,29 @@ export default function IngresosEgresos() {
       motivo_mov: motivo.current.value,
       monto_mov: monto.current.value,
       tipo_mov: tipo_mov.current.value,
-      sucursal_id:idSuc
+      sucursal_id: idSuc
     }
     // console.log(data)
-    await ipcRenderer.invoke('post-ingreso-egreso-caja',data)
-    .then(resp=>{
-      const response=JSON.parse(resp)
-      if(response.status===300){
-        Toast.fire({ icon: 'error', title: response.message })
-        return
-      }
-      Toast.fire({ icon: 'success', title: response.message })
-      e.target.reset()
-    })
-    .catch(err=>Toast.fire({ icon: 'error', title: err }))
-    
+    await ipcRenderer.invoke('post-ingreso-egreso-caja', data)
+      .then(resp => {
+        const response = JSON.parse(resp)
+        if (response.status === 300) {
+          Toast.fire({ icon: 'error', title: response.message })
+          return
+        }
+        Toast.fire({ icon: 'success', title: response.message })
+        e.target.reset()
+      })
+      .catch(err => Toast.fire({ icon: 'error', title: err }))
+
   }
   return (
     <Container>
       <Breadcrumbs className={classes.spacingBread}>
-        <StyledBreadcrumb label="Ingreso de Productos" onClick={() => navigate(`/maindrawer/registro-producto/${id}`)} />
-        <StyledBreadcrumb label="Movimiento Caja Chica" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/maindrawer/ingresos-egresos/${id}`)} />
+        <StyledBreadcrumb label="Ingreso de Productos" onClick={() => navigate(`/home/maindrawer/registro-producto/${id}`)} />
+        <StyledBreadcrumb label="Movimiento Caja Chica" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/home/maindrawer/ingresos-egresos/${id}`)} />
       </Breadcrumbs>
+      <Typography variant='h6' className={classes.inputText} align='center'>REGISTRAR MOVIMIENTO CAJA CHICA</Typography>
       <Grid container justifyContent='center' alignItems='center'>
         <Grid item xs={12} sm={5}>
           <form onSubmit={postIngresoEgreso}>

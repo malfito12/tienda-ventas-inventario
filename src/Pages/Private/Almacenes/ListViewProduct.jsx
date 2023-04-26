@@ -111,40 +111,40 @@ export default function ListViewProduct() {
         <Container fixed>
             <Breadcrumbs className={classes.spacingBread}>
                 {/* <StyledBreadcrumb label="Productos" style={{color:'black',fontSize:15}} icon={<HomeIcon fontSize="small" />} onClick={() => navigate(`/almacen/${id}`)} /> */}
-                <StyledBreadcrumb label="Productos" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/maindrawer/almacen/${id}`)} />
-                <StyledBreadcrumb label="Tipo de Producto" onClick={() => navigate(`/maindrawer/tipo-producto/${id}`)} />
-                <StyledBreadcrumb label="Unidad de Medida" onClick={() => navigate(`/maindrawer/unidad-medida/${id}`)} />
+                <StyledBreadcrumb label="Productos" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/home/maindrawer/almacen/${id}`)} />
+                <StyledBreadcrumb label="Tipo de Producto" onClick={() => navigate(`/home/maindrawer/tipo-producto/${id}`)} />
+                <StyledBreadcrumb label="Unidad de Medida" onClick={() => navigate(`/home/maindrawer/unidad-medida/${id}`)} />
             </Breadcrumbs>
             <div align='right'>
                 <AddProduct getProducts={getAllProducts} />
             </div>
-            <TableContainer component={Paper}   >
-                <Table>
+            <TableContainer component={Paper} style={{ maxHeight: 500, }}  >
+                <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <TableCell>N°</TableCell>
-                            <TableCell align='center'>imagen</TableCell>
-                            <TableCell align='center'>Nombre de Producto</TableCell>
-                            <TableCell align='center'>Codigo de Producto</TableCell>
-                            <TableCell align='center'>Cantidad Total Stock</TableCell>
-                            <TableCell align='center'>Acciones</TableCell>
+                            <TableCell className={classes.colorHead}>N°</TableCell>
+                            <TableCell className={classes.colorHead} align='center'>imagen</TableCell>
+                            <TableCell className={classes.colorHead} align='center'>Nombre de Producto</TableCell>
+                            <TableCell className={classes.colorHead} align='center'>Codigo de Producto</TableCell>
+                            <TableCell className={classes.colorHead} align='center'>Cantidad Total Stock</TableCell>
+                            <TableCell className={classes.colorHead} align='center'>Acciones</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {products.length > 0 ? (
                             products.map((e, index) => (
                                 <TableRow key={index}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell align='center'>
+                                    <TableCell size='small'>{index + 1}</TableCell>
+                                    <TableCell size='small' align='center'>
                                         <IconButton size='small' onClick={() => openImages(e.product_image)}>
-                                            <img src={e.product_image} style={{ width: '50px', height: '50px' }} alt='#' />
+                                            <img src={e.product_image} style={{ width: '50px', height: '50px',borderRadius:25 }} alt='#' />
                                         </IconButton>
                                     </TableCell>
-                                    <TableCell align='center'>{e.product_name}</TableCell>
+                                    <TableCell size='small' align='center'>{e.product_name}</TableCell>
                                     {/* <TableCell>{e.product_total_amount}</TableCell> */}
-                                    <TableCell align='center'>{e.product_code}</TableCell>
-                                    <TableCell align='center'>{e.stock}</TableCell>
-                                    <TableCell align='center'>
+                                    <TableCell size='small' align='center'>{e.product_code}</TableCell>
+                                    <TableCell size='small' align='center'>{e.stock}</TableCell>
+                                    <TableCell size='small' align='center'>
                                         <UpdateProduct data={e} getProducts={getAllProducts} />
                                         <Tooltip title='Eliminar'>
                                             <IconButton onClick={() => openCloseModalDelete(e.product_id)} size='small' style={{ background: '#f44336', color: 'white', marginRight: 5 }}>
@@ -176,5 +176,10 @@ const useStyles = makeStyles((theme) => ({
         background: '#43a047',
         color: 'white',
         marginBottom: 20,
-    }
+    },
+    colorHead:{
+        background:'#424242',
+        color:'white',
+        padding:13
+      }
 }))

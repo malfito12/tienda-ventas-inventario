@@ -211,7 +211,7 @@ export function EditUser(props) {
                 maxWidth='xs'
             >
                 <Paper component={Box} p={2}>
-                    <Typography>Actualizar Usuario</Typography>
+                    <Typography variant='h6' align='center'>Actualizar Usuario</Typography>
                     <Grid container>
                         <form onSubmit={updateUser} >
                             <label>Nombre</label>

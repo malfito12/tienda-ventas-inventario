@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
 
 function MainDrawer(props) {
 
-    const { idSuc } = useContext(AuthContext)
+    const { idSuc, rol } = useContext(AuthContext)
     const navigate = useNavigate()
     const { window } = props;
     const classes = useStyles();
@@ -83,15 +83,17 @@ function MainDrawer(props) {
             <div className={classes.toolbar} />
             <Divider />
             <List>
-                <ListItem button onClick={() => navigate(`/maindrawer/usuarios/${idSuc}`)}>
-                    {/* <ListItemIcon style={{color:'white'}}> */}
-                    <Tooltip title='Usuarios'>
-                        <PersonSharpIcon style={{ color: 'white', marginBottom: 10 }} />
-                    </Tooltip>
-                    {/* </ListItemIcon> */}
-                    {/* <ListItemText primary='Almacen' /> */}
-                </ListItem>
-                <ListItem button onClick={() => navigate(`/maindrawer/almacen/${idSuc}`)}>
+                {rol === 'ADMINISTRADOR' ? (
+                    <ListItem button onClick={() => navigate(`/home/maindrawer/usuarios/${idSuc}`)}>
+                        {/* <ListItemIcon style={{color:'white'}}> */}
+                        <Tooltip title='Usuarios'>
+                            <PersonSharpIcon style={{ color: 'white', marginBottom: 10 }} />
+                        </Tooltip>
+                        {/* </ListItemIcon> */}
+                        {/* <ListItemText primary='Almacen' /> */}
+                    </ListItem>
+                ) : null}
+                <ListItem button onClick={() => navigate(`/home/maindrawer/almacen/${idSuc}`)}>
                     {/* <ListItemIcon style={{color:'white'}}> */}
                     <Tooltip title='Almacén'>
                         <StoreIcon style={{ color: 'white', marginBottom: 10 }} />
@@ -99,7 +101,7 @@ function MainDrawer(props) {
                     {/* </ListItemIcon> */}
                     {/* <ListItemText primary='Almacen' /> */}
                 </ListItem>
-                <ListItem button onClick={() => navigate(`/maindrawer/ventas/${idSuc}`)}>
+                <ListItem button onClick={() => navigate(`/home/maindrawer/ventas/${idSuc}`)}>
                     {/* <ListItemIcon> */}
                     <Tooltip title='Venta de productos'>
                         <LocalGroceryStoreIcon style={{ color: 'white', marginBottom: 10 }} />
@@ -107,7 +109,7 @@ function MainDrawer(props) {
                     {/* </ListItemIcon> */}
                     {/* <ListItemText primary='Ventas' style={{color:'white'}} /> */}
                 </ListItem>
-                <ListItem button onClick={() => navigate(`/maindrawer/registro-producto/${idSuc}`)}>
+                <ListItem button onClick={() => navigate(`/home/maindrawer/registro-producto/${idSuc}`)}>
                     {/* <ListItemIcon style={{color:'white'}}> */}
                     <Tooltip title='Registro de Productos'>
                         <AddBoxIcon style={{ color: 'white', marginBottom: 10 }} />
@@ -115,7 +117,7 @@ function MainDrawer(props) {
                     {/* </ListItemIcon> */}
                     {/* <ListItemText primary='Registro de Productos' /> */}
                 </ListItem>
-                <ListItem button onClick={() => navigate(`/maindrawer/clientes/${idSuc}`)}>
+                <ListItem button onClick={() => navigate(`/home/maindrawer/clientes/${idSuc}`)}>
                     {/* <ListItemIcon style={{color:'white'}}> */}
                     <Tooltip title='Clientes'>
                         <NaturePeopleIcon style={{ color: 'white', marginBottom: 10 }} />
@@ -123,7 +125,7 @@ function MainDrawer(props) {
                     {/* </ListItemIcon> */}
                     {/* <ListItemText primary='Perfil Sucursal' /> */}
                 </ListItem>
-                <ListItem button onClick={()=>navigate(`/maindrawer/libro-diario/${idSuc}`)}>
+                <ListItem button onClick={() => navigate(`/home/maindrawer/libro-diario/${idSuc}`)}>
                     {/* <ListItemIcon style={{color:'white'}}> */}
                     <Tooltip title='Cierre de Caja'>
                         <CheckBoxIcon style={{ color: 'white', marginBottom: 10 }} />
@@ -139,60 +141,61 @@ function MainDrawer(props) {
 
     return (
         <>
-            <div className={classes.root} >
-                <MainAppBar menu={handleDrawerToggle} />
-                <nav className={classes.drawer} aria-label="mailbox folders">
-                    <Hidden smUp implementation="css">
-                        <Drawer
-                            container={container}
-                            variant="temporary"
-                            anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-                            open={mobileOpen}
-                            onClose={handleDrawerToggle}
-                            classes={{
-                                paper: classes.drawerPaper,
-                            }}
-                            ModalProps={{
-                                keepMounted: true, // Better open performance on mobile.
-                            }}
-                        >
-                            {drawer}
-                        </Drawer>
-                    </Hidden>
-                    <Hidden xsDown implementation="css" >
-                        <Drawer
-                            classes={{
-                                paper: classes.drawerPaper,
-                            }}
-                            variant="permanent"
-                            open
-                        >
-                            {drawer}
-                        </Drawer>
-                    </Hidden>
-                </nav>
-                <main className={classes.content}>
-                    <div className={classes.toolbar} />
-                    <Routes>
-                        <Route path='/sucursal/:id' element={<ViewSucursal />} />
-                        <Route path='/usuarios/:id' element={<ListViewUser />} />
-                        <Route path='/almacen/:id' element={<ListViewProduct />} />
-                        <Route path='/tipo-producto/:id' element={<ListViewTypeProduct />} />
-                        <Route path='/unidad-medida/:id' element={<ListViewUnidadMedida />} />
-                        <Route path='/ventas/:id' element={<VentaProducts />} />
-                        <Route path='/lista-ventas/:id' element={<ListViewVentas />} />
-                        <Route path='/kardex-producto/:id' element={<KardexProducto />} />
-                        <Route path='/registro-producto/:id' element={<RegisterProduct />} />
-                        <Route path='/clientes/:id' element={<ListViewClients />} />
-                        <Route path='/cierre-caja/:id' element={<CierreCaja />} />
-                        <Route path='/libro-diario/:id' element={<LibroDiario />} />
-                        <Route path='/balance-semana/:id' element={<BalanceDiario />} />
-                        <Route path='/balance-mes/:id' element={<BalanceMensual />} />
-                        <Route path='/ingresos-egresos/:id' element={<IngresosEgresos />} />
-                    </Routes>
-                </main>
+            <div className='otro'>
+                <div className={classes.root} >
+                    <MainAppBar menu={handleDrawerToggle} />
+                    <nav className={classes.drawer} aria-label="mailbox folders">
+                        <Hidden smUp implementation="css">
+                            <Drawer
+                                container={container}
+                                variant="temporary"
+                                anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+                                open={mobileOpen}
+                                onClose={handleDrawerToggle}
+                                classes={{
+                                    paper: classes.drawerPaper,
+                                }}
+                                ModalProps={{
+                                    keepMounted: true, // Better open performance on mobile.
+                                }}
+                            >
+                                {drawer}
+                            </Drawer>
+                        </Hidden>
+                        <Hidden xsDown implementation="css" >
+                            <Drawer
+                                classes={{
+                                    paper: classes.drawerPaper,
+                                }}
+                                variant="permanent"
+                                open
+                            >
+                                {drawer}
+                            </Drawer>
+                        </Hidden>
+                    </nav>
+                    <main className={classes.content}>
+                        <div className={classes.toolbar} />
+                        <Routes>
+                            <Route path='/sucursal/:id' element={<ViewSucursal />} />
+                            <Route path='/usuarios/:id' element={<ListViewUser />} />
+                            <Route path='/almacen/:id' element={<ListViewProduct />} />
+                            <Route path='/tipo-producto/:id' element={<ListViewTypeProduct />} />
+                            <Route path='/unidad-medida/:id' element={<ListViewUnidadMedida />} />
+                            <Route path='/ventas/:id' element={<VentaProducts />} />
+                            <Route path='/lista-ventas/:id' element={<ListViewVentas />} />
+                            <Route path='/kardex-producto/:id' element={<KardexProducto />} />
+                            <Route path='/registro-producto/:id' element={<RegisterProduct />} />
+                            <Route path='/clientes/:id' element={<ListViewClients />} />
+                            <Route path='/cierre-caja/:id' element={<CierreCaja />} />
+                            <Route path='/libro-diario/:id' element={<LibroDiario />} />
+                            <Route path='/balance-semana/:id' element={<BalanceDiario />} />
+                            <Route path='/balance-mes/:id' element={<BalanceMensual />} />
+                            <Route path='/ingresos-egresos/:id' element={<IngresosEgresos />} />
+                        </Routes>
+                    </main>
+                </div>
             </div>
-
         </>
     );
 }
