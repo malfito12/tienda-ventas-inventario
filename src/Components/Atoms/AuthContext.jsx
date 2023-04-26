@@ -8,7 +8,7 @@ export const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
     const [idSuc, setIdSuc] = useState([])
-    const [rol, setRol] = useState([])
+    const [sucName, setSucName] = useState([])
     const [isAuthenticated,setIsAuthenticated]=useState(window.sessionStorage.getItem('login')??false)
 
     //-------------------------------------------------------------------
@@ -20,18 +20,17 @@ export const AuthProvider = ({ children }) => {
         window.sessionStorage.removeItem('user')
         window.sessionStorage.removeItem('login')
         window.sessionStorage.removeItem('rol')
-        window.sessionStorage.removeItem('username')
+        window.sessionStorage.removeItem('user_name')
         setIsAuthenticated(false)
     },[])
-    const setIdSucursal = (id) => {
-        setIdSuc(id)
+    const setIdSucursal = (data) => {
+        setIdSuc(data.sucursal_id)
+        setSucName(data.sucursal_name)
     }
-    const rolUser = (rol) => {
-        setRol(rol)
-    }
+
     const value=useMemo(()=>({
-        secondLogin,secondLoguot,isAuthenticated,setIdSucursal,idSuc,rol,rolUser
-    }),[secondLogin,secondLoguot,isAuthenticated,setIdSucursal,idSuc,rol,rolUser])
+        secondLogin,secondLoguot,isAuthenticated,setIdSucursal,idSuc,sucName
+    }),[secondLogin,secondLoguot,isAuthenticated,setIdSucursal,idSuc,sucName])
 
     //-------------------------------------------------------------------
 

@@ -62,13 +62,13 @@ const AddSucursal = () => {
     }
 
     return (
-        <>
+        <div className='otro'>
             <MainAppBar menu={handleDrawerToggle} />
             <div className={classes.toolbar} />
             <Container fixed>
                 <div className={classes.form}>
 
-                    <Typography variant='h5' className={classes.inputText}>NUEVA SUCURSAL</Typography>
+                    <Typography variant='h5' className={classes.inputText} style={{color:'#e0e0e0'}}>NUEVA SUCURSAL</Typography>
                     <Grid container justifyContent='center' alignItems='center'>
                         <Grid item xs={12} sm={5}>
                             <form onSubmit={postSucursal}>
@@ -80,6 +80,7 @@ const AddSucursal = () => {
                                         size='small'
                                         required
                                         inputRef={name_sucursal}
+                                        style={{background:'white',borderRadius:5}}
                                     />
                                 </div>
                                 <div className={classes.inputText}>
@@ -90,6 +91,7 @@ const AddSucursal = () => {
                                         size='small'
                                         required
                                         inputRef={address_sucursal}
+                                        style={{background:'white',borderRadius:5}}
                                     />
                                 </div>
                                 <div className={classes.inputText}>
@@ -102,6 +104,7 @@ const AddSucursal = () => {
                                         variant='outlined'
                                         size='small'
                                         inputRef={dep_sucursal}
+                                        style={{background:'white',borderRadius:5}}
                                         required
                                     >
                                         {dep.map((e, index) => (<MenuItem key={index} value={e.name}>{e.name}</MenuItem>))}
@@ -115,6 +118,7 @@ const AddSucursal = () => {
                                         size='small'
                                         required
                                         inputRef={phone_sucursal}
+                                        style={{background:'white',borderRadius:5}}
                                     />
                                 </div>
                                 <div style={{ marginTop: 20 }}>
@@ -126,7 +130,7 @@ const AddSucursal = () => {
                 </div>
 
             </Container >
-        </>
+        </div>
     )
 }
 

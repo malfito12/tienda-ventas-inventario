@@ -7,6 +7,7 @@ import jsPDF from 'jspdf'
 import 'jspdf-autotable'
 import QRCode from 'qrcode'
 import { v4 as uuidv4 } from 'uuid';
+import suc1 from '../../../images/suc1.png'
 
 
 const ipcRenderer = window.require('electron').ipcRenderer
@@ -30,7 +31,7 @@ export default function ListViewVentas() {
     const classes = useStyles()
     const navigate = useNavigate()
     const { id } = useParams()
-    const { idSuc } = useContext(AuthContext)
+    const { idSuc,sucName } = useContext(AuthContext)
     const [lista, setLista] = useState([])
     useEffect(() => {
         getAllRegisterVentas()
@@ -71,7 +72,7 @@ export default function ListViewVentas() {
                         margin: 1,
                     }
                     QRCode.toDataURL(
-                        `Empresa: XXX, Cliente: ${e.client_name} ${e.client_surname_p} ${e.client_surname_m}, CI: ${e.client_ci}, Total a Pagar: ${response.data.precio_venta}, cod: ${uuidv4()}`,
+                        `Sucursal: ${sucName}, Cliente: ${e.client_name} ${e.client_surname_p} ${e.client_surname_m}, CI: ${e.client_ci}, Total a Pagar: ${response.data.precio_venta}, cod: ${uuidv4()}`,
                         opts,
                         // { errorCorrectionLevel: 'H' },
                         function (err, url) { image = url })
@@ -85,7 +86,10 @@ export default function ListViewVentas() {
                     doc.setFontSize(8)
                     doc.text( `Cliente: ${e.client_name} ${e.client_surname_p} ${e.client_surname_m}`, 0.5, 1.1)
                     //derecha
-                    doc.text(`Nombre de la Empresa`, 3.5, 0.5)
+                    doc.setFontSize(11)
+                    doc.text(`Sucursal ${sucName}`, 3.5, 0.5)
+                    doc.addImage(`${suc1}`, 5.3, 0.2, 1.1, 1.1)
+                    doc.setFontSize(8)
                     doc.text(`Documento no valido como factura`, 3.5, 0.8)
                     //QR
                     doc.addImage(`${image}`, 0.5, 1.3, 1.5, 1.5)

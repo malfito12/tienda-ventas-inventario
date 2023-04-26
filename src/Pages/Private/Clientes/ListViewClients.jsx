@@ -83,7 +83,8 @@ export const ListViewClients = () => {
 
 const useStyles = makeStyles((theme) => ({
   alignTextTitle: {
-    marginBottom: 20
+    marginBottom: 20,
+    color:'#e0e0e0'
   },
   colorHead: {
     background: '#424242',

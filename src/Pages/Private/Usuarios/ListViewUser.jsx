@@ -1,6 +1,6 @@
-import { Button, Container, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@material-ui/core'
+import { Avatar, Button, Container, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@material-ui/core'
 import React, { useEffect, useState } from 'react'
-import { AddUser, DeleteUser, EditUser } from '../../../Components/Molecules/Users/AddUser'
+import { AddUser, CambioPass, DeleteUser, EditUser } from '../../../Components/Molecules/Users/AddUser'
 
 const ipcRenderer = window.require('electron').ipcRenderer
 
@@ -37,6 +37,7 @@ const ListViewUser = () => {
           <TableHead >
             <TableRow >
               <TableCell className={classes.colorHead}>N°</TableCell>
+              <TableCell className={classes.colorHead}>Avatar</TableCell>
               <TableCell className={classes.colorHead}>Nombre</TableCell>
               <TableCell className={classes.colorHead}>Nombre Usuario</TableCell>
               <TableCell className={classes.colorHead}>Rol</TableCell>
@@ -50,6 +51,9 @@ const ListViewUser = () => {
               users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((e, index) => (
                 <TableRow key={index}>
                   <TableCell size='small'>{index + 1}</TableCell>
+                  <TableCell>
+                    <Avatar style={{ width: 35, height: 35 }}>{`${(e.people_name).charAt(0)}`}</Avatar>
+                  </TableCell>
                   <TableCell size='small'>{e.people_name}</TableCell>
                   <TableCell size='small'>{e.user_name}</TableCell>
                   <TableCell size='small'>{e.rol_name}</TableCell>
@@ -57,6 +61,7 @@ const ListViewUser = () => {
 
                   <TableCell size='small'>
                     <EditUser data={e} getUsers={getAllUsers} />
+                    <CambioPass data={e} getUsers={getAllUsers} />
                     <DeleteUser data={e} getUsers={getAllUsers} />
                   </TableCell>
                 </TableRow>
@@ -83,7 +88,8 @@ export default ListViewUser
 
 const useStyles = makeStyles((theme) => ({
   alignTextTitle: {
-    marginBottom: 20
+    marginBottom: 20,
+    color:'#e0e0e0'
   },
   colorHead: {
     background: '#424242',

@@ -14,6 +14,7 @@ import jsPDF from 'jspdf'
 import 'jspdf-autotable'
 import QRCode from 'qrcode'
 import { useNavigate, useParams } from 'react-router-dom';
+import suc1 from '../../../images/suc1.png'
 
 const ipcRenderer = window.require('electron').ipcRenderer
 
@@ -36,7 +37,7 @@ const StyledBreadcrumb = withStyles((theme) => ({
 export const VentaProducts = () => {
   const navigate = useNavigate()
   const { id } = useParams()
-  const { idSuc } = useContext(AuthContext)
+  const { idSuc, sucName } = useContext(AuthContext)
   const [products, setProducts] = useState([])
   const classes = useStyles()
   const precioVenta = useRef()
@@ -194,7 +195,7 @@ export const VentaProducts = () => {
       margin: 1,
     }
     QRCode.toDataURL(
-      `Empresa: XXX, Cliente: ${client[0].client_name} ${client[0].client_surname_p} ${client[0].client_surname_m}, CI: ${client[0].client_ci}, Total a Pagar: ${precioVenta.current.value}, cod: ${uuidv4()}`,
+      `Sucursal: ${sucName}, Cliente: ${client[0].client_name} ${client[0].client_surname_p} ${client[0].client_surname_m}, CI: ${client[0].client_ci}, Total a Pagar: ${precioVenta.current.value}, cod: ${uuidv4()}`,
       opts,
       // { errorCorrectionLevel: 'H' },
       function (err, url) { image = url })
@@ -208,7 +209,10 @@ export const VentaProducts = () => {
     doc.setFontSize(8)
     doc.text(client.length > 0 ? `Cliente: ${client[0].client_name} ${client[0].client_surname_p} ${client[0].client_surname_m}` : `Cliente`, 0.5, 1.1)
     //derecha
-    doc.text(`Nombre de la Empresa`, 3.5, 0.5)
+    doc.setFontSize(11)
+    doc.text(`Sucursal ${sucName}`, 3.5, 0.5)
+    doc.addImage(`${suc1}`, 5.3, 0.2, 1.1, 1.1)
+    doc.setFontSize(8)
     doc.text(`Documento no valido como factura`, 3.5, 0.8)
     //QR
     doc.addImage(`${image}`, 0.5, 1.3, 1.5, 1.5)
@@ -272,6 +276,21 @@ export const VentaProducts = () => {
     // setPre({ precioeje: cant })
 
   }
+
+  //-------OPEN IMAGEN---------------------
+  const openImages = (e) => {
+    Swal.fire({
+      // title: 'Sweet!',
+      // text: 'Modal with a custom image.',
+      // imageUrl: 'https://unsplash.it/400/200',
+      imageUrl: e,
+      imageWidth: 400,
+      imageHeight: 400,
+      showCloseButton: true,
+      showConfirmButton: false
+
+    })
+  }
   // console.log(changeData.cantidad)
   // console.log(changeData.product_price)
   return (
@@ -282,7 +301,7 @@ export const VentaProducts = () => {
           <StyledBreadcrumb label="Registro de Ventas" onClick={() => navigate(`/home/maindrawer/lista-ventas/${id}`)} />
         </Breadcrumbs>
         <Grid style={{ marginTop: 20, marginBottom: 10 }} container justifyContent='flex-end' alignItems='center'>
-          <Typography variant='subtitle1' style={{ marginRight: 10 }} >Buscar</Typography>
+          <Typography variant='subtitle1' style={{ marginRight: 10, color: '#e0e0e0' }} >Buscar</Typography>
           <TextField
             variant='outlined'
             size='small'
@@ -311,10 +330,11 @@ export const VentaProducts = () => {
                   </IconButton>
                 </Grid>
                 {client.length > 0 ? (
-                  <>
-                    <Typography align='center' >Datos Principales</Typography>
-                    <Typography variant='body1' style={{ marginLeft: 10, marginBottom: 15 }}> Nombre: {client[0].client_name} {client[0].client_surname_p} {client[0].client_surname_m}</Typography>
-                  </>
+                  <div style={{ background: '#757575', color: 'white', borderRadius: 5, padding: 1 }}>
+                    <Typography align='center' variant='subtitle1' style={{ fontWeight: 'bold' }}>Datos Principales</Typography>
+                    <Typography variant='body1' style={{ marginLeft: 10, marginBottom: 2 }}><span style={{ fontWeight: 'bold' }}> Nombre:</span> {client[0].client_name} {client[0].client_surname_p} {client[0].client_surname_m}</Typography>
+                    <Typography variant='body1' style={{ marginLeft: 10, marginBottom: 10 }}><span style={{ fontWeight: 'bold' }}> Cedula de Identidad:</span> {client[0].client_ci}</Typography>
+                  </div>
                 ) : null}
                 {uno.length > 0 ? (
                   uno.map((e, index) => (
@@ -402,7 +422,11 @@ export const VentaProducts = () => {
                     products.filter(buscarProducto(buscador)).map((e, index) => (
                       <TableRow key={index}>
                         <TableCell size='small'>{index + 1}</TableCell>
-                        <TableCell size='small'><img src={e.product_image} style={{ width: '50px', height: '50px',borderRadius:25 }} alt='#' /></TableCell>
+                        <TableCell size='small'>
+                          <IconButton size='small' onClick={() => openImages(e.product_image)}>
+                            <img src={e.product_image} style={{ width: '50px', height: '50px', borderRadius: 25 }} alt='#' />
+                          </IconButton>
+                        </TableCell>
                         <TableCell size='small'>{e.product_code}</TableCell>
                         <TableCell size='small'>{e.product_name}</TableCell>
                         <TableCell size='small' width={20}><Paper style={

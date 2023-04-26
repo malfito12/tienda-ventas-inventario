@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
 
 function MainDrawer(props) {
 
-    const { idSuc, rol } = useContext(AuthContext)
+    const { idSuc} = useContext(AuthContext)
     const navigate = useNavigate()
     const { window } = props;
     const classes = useStyles();
@@ -78,6 +78,7 @@ function MainDrawer(props) {
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
+    const rol=sessionStorage.getItem('rol')
     const drawer = (
         <div >
             <div className={classes.toolbar} />

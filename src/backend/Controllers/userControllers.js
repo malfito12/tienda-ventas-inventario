@@ -32,7 +32,7 @@ controller.getAllUsers = async (e, args) => {
     try {
         const result = await conn.query(
             `SELECT * FROM users u
-            INNER JOIN rols r ON r.rol_id=u.user_rol`
+            INNER JOIN rols r ON r.rol_id=u.user_rol ORDER BY u.people_name ASC`
         )
         return JSON.stringify(result.rows)
     } catch (error) {
@@ -92,6 +92,19 @@ controller.getAllRols = async (e, args) => {
         return JSON.stringify(result.rows)
     } catch (error) {
         console.log(error)
+    }
+}
+
+//---------------CAMBIO DE CONTRASEÑA--------------------------
+controller.changePass=async(e,args)=>{
+    const params=args
+    const passCrypto = crypto.createHash('md5').update(params.newPass).digest('hex')
+    try {
+        await conn.query('UPDATE users SET user_password=$1,user_repeat_password=$2 WHERE user_id=$3',[passCrypto,params.reNewPass,params.user_id])
+        return JSON.stringify({status:200,message:'El Cambio de Contraseña se realizó Correctamente'})
+    } catch (error) {
+        console.log(error)
+        return JSON.stringify({status:300,message:'Error, No se puedo Cambiar la contraseña'})
     }
 }
 

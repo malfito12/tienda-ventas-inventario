@@ -38,20 +38,21 @@ const Home = () => {
       console.log(error)
     }
   }
-  const asigIdSuc=(id)=>{
+  const asigIdSuc=(e)=>{
+    const id=e.sucursal_id
+    setIdSucursal(e)
     navigate(`/home/maindrawer/sucursal/${id}`)
-    setIdSucursal(id)
   }
   return (
     <div className='otro'>
       <MainAppBar menu={handleDrawerToggle} />
       <div className={classes.toolbar} />
       <Container>
-        <Grid container justifyContent='center' alignItems='center'>
+        <Grid style={{marginTop:25}} container justifyContent='center' alignItems='center'>
           {sucursales.length > 0 ? (
             sucursales.map((e, index) => (
               <Box key={index} className={classes.sucursalSpacing}>
-                <IconButton onClick={()=>asigIdSuc(e.sucursal_id)}>
+                <IconButton onClick={()=>asigIdSuc(e)}>
                   <ApartmentIcon style={{color:'#424242'}} className={classes.sucursalIcon} />
                   <Typography style={{color:'#e0e0e0'}} variant='h5' align='center' className={classes.sucursalTitle}>{e.sucursal_name}</Typography>
                 </IconButton>

@@ -13,5 +13,7 @@ router.handle('status-user',userControllers.statusUser)
 
 //-----ROLS-------------
 router.handle('get-all-rols',userControllers.getAllRols)
+//-----CAMBIO DE CONTRASEÑA-------------
+router.handle('change-new-pass',userControllers.changePass)
 
 module.exports=router

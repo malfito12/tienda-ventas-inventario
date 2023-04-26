@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, Grid, IconButton, makeStyles, Menu, MenuItem, Paper, TextField, Typography } from '@material-ui/core'
+import { Box, Button, Dialog, Grid, IconButton, InputAdornment, makeStyles, Menu, MenuItem, Paper, TextField, Tooltip, Typography } from '@material-ui/core'
 import React, { useEffect, useRef, useState } from 'react'
 import SaveIcon from '@material-ui/icons/Save';
 import Swal from 'sweetalert2';
@@ -6,7 +6,9 @@ import EditSharpIcon from '@material-ui/icons/EditSharp';
 import LockSharpIcon from '@material-ui/icons/LockSharp';
 import LockOpenSharpIcon from '@material-ui/icons/LockOpenSharp';
 import PersonAddTwoToneIcon from '@material-ui/icons/PersonAddTwoTone';
-
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 
 const ipcRenderer = window.require('electron').ipcRenderer
 
@@ -50,6 +52,10 @@ export function AddUser(props) {
     //-------ADD USER------------------
     const postUser = async (e) => {
         e.preventDefault()
+        if (password.current.value !== repeat_password.current.value) {
+            Toast.fire({ icon: 'warning', title: 'Error, Verifique que las Contraseñas sean Iguales' })
+            return
+        }
         const data = {
             people_name: name.current.value,
             user_name: user_name.current.value,
@@ -76,7 +82,7 @@ export function AddUser(props) {
     }
     return (
         <>
-            <Button onClick={openCloseModalAdd} variant='contained' endIcon={<PersonAddTwoToneIcon/>} size='small' className={classes.buttonSave} style={{ textTransform: 'capitalize' }}>Agregar Usuario</Button>
+            <Button onClick={openCloseModalAdd} variant='contained' endIcon={<PersonAddTwoToneIcon />} size='small' className={classes.buttonSave} style={{ textTransform: 'capitalize' }}>Agregar Usuario</Button>
             <Dialog
                 open={openModal}
                 onClose={openCloseModalAdd}
@@ -202,9 +208,11 @@ export function EditUser(props) {
     }
     return (
         <>
-            <IconButton onClick={openCloseModalEdit} size='small' style={{ background: '#fb8c00', color: 'white', marginRight: 5 }}>
-                <EditSharpIcon />
-            </IconButton>
+            <Tooltip title='Actualizar'>
+                <IconButton onClick={openCloseModalEdit} size='small' style={{ background: '#fb8c00', color: 'white', marginRight: 5 }}>
+                    <EditSharpIcon />
+                </IconButton>
+            </Tooltip>
             <Dialog
                 open={openModal}
                 onClose={openCloseModalEdit}
@@ -257,7 +265,7 @@ export function EditUser(props) {
                                 ) : null}
                             </TextField>
                             <div style={{ marginTop: 15 }}>
-                                <Button endIcon={<SaveIcon />} type='submit' variant='contained' style={{ background: '#43a047', color: 'white',textTransform: 'capitalize' }} fullWidth>Guardar</Button>
+                                <Button endIcon={<SaveIcon />} type='submit' variant='contained' style={{ background: '#43a047', color: 'white', textTransform: 'capitalize' }} fullWidth>Guardar</Button>
                             </div>
                         </form>
                     </Grid>
@@ -298,11 +306,12 @@ export function DeleteUser(props) {
     }
     return (
         <>
-            {props.data.user_status === 'BAJA'
-                ? <IconButton size='small' onClick={openDropDown} style={{ background: '#f44336', color: 'white' }}><LockSharpIcon  /></IconButton>
-                : <IconButton size='small' onClick={openDropDown} style={{ background: '#43a047', color: 'white' }}><LockOpenSharpIcon  /></IconButton>
-            }
-
+            <Tooltip title='Estado'>
+                {props.data.user_status === 'BAJA'
+                    ? <IconButton size='small' onClick={openDropDown} style={{ background: '#f44336', color: 'white' }}><LockSharpIcon /></IconButton>
+                    : <IconButton size='small' onClick={openDropDown} style={{ background: '#43a047', color: 'white' }}><LockOpenSharpIcon /></IconButton>
+                }
+            </Tooltip>
             <Menu
                 getContentAnchorEl={null}
                 anchorEl={openDrop}
@@ -320,6 +329,108 @@ export function DeleteUser(props) {
                 <MenuItem onClick={() => deleteUser(1)}>Activado</MenuItem>
                 <MenuItem onClick={() => deleteUser(2)}>Desactivado</MenuItem>
             </Menu>
+        </>
+    )
+}
+
+export function CambioPass(props) {
+    const [openModal, setOpenModal] = useState(false)
+    const [viewPass1, setViewPass1] = useState(false)
+    const [viewPass2, setViewPass2] = useState(false)
+    const newPass = useRef()
+    const repeatNewPass = useRef()
+    const openCloseModalPass = () => {
+        setOpenModal(!openModal)
+    }
+    const reViewPass1 = () => {
+        setViewPass1(!viewPass1)
+    }
+    const reViewPass2 = () => {
+        setViewPass2(!viewPass2)
+    }
+
+    const changeNewPass = async (e) => {
+        e.preventDefault()
+        if (newPass.current.value !== repeatNewPass.current.value) {
+            Toast.fire({ icon: 'warning', title: 'Error, Verifique que las Contraseñas sean Iguales' })
+            return
+        }
+        const data = {
+            newPass: newPass.current.value,
+            reNewPass: repeatNewPass.current.value,
+            user_id: props.data.user_id
+        }
+        console.log(data)
+        await ipcRenderer.invoke('change-new-pass', data)
+            .then(resp => {
+                var response = JSON.parse(resp)
+                if (response.status === 300) {
+                    Toast.fire({ icon: 'error', title: response.message })
+                    return
+                }
+                Toast.fire({ icon: 'success', title: response.message })
+                props.getUsers()
+                openCloseModalPass()
+            })
+            .catch(err => Toast.fire({ icon: 'error', title: err }))
+    }
+    return (
+        <>
+            <Tooltip title='Cambiar Contraseña'>
+                <IconButton onClick={openCloseModalPass} size='small' style={{ background: '#2196f3', color: 'white', marginRight: 5 }}>
+                    <VpnKeyIcon />
+                </IconButton>
+            </Tooltip>
+            <Dialog
+                open={openModal}
+                onClose={openCloseModalPass}
+                maxWidth='xs'
+            >
+                <Paper component={Box} p={2}>
+                    <Typography align='center' variant='subtitle1'>Cambiar Contraseña</Typography>
+                    <form onSubmit={changeNewPass}>
+                        <label >Nueva Contraseña</label>
+                        <TextField
+                            variant='outlined'
+                            size='small'
+                            fullWidth
+                            style={{ marginBottom: 10 }}
+                            inputRef={newPass}
+                            type={viewPass1 ? 'type' : 'password'}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position='end'>
+                                        <IconButton onClick={reViewPass1}>
+                                            {viewPass1 ? <VisibilityOffIcon /> : <VisibilityIcon />}
+
+                                        </IconButton>
+                                    </InputAdornment>
+                                )
+                            }}
+                        />
+                        <label >Repita Nueva Contraseña</label>
+                        <TextField
+                            variant='outlined'
+                            size='small'
+                            fullWidth
+                            style={{ marginBottom: 10 }}
+                            type={viewPass2 ? 'type' : 'password'}
+                            inputRef={repeatNewPass}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position='end'>
+                                        <IconButton onClick={reViewPass2}>
+                                            {viewPass2 ? <VisibilityOffIcon /> : <VisibilityIcon />}
+
+                                        </IconButton>
+                                    </InputAdornment>
+                                )
+                            }}
+                        />
+                        <Button endIcon={<SaveIcon />} type='submit' variant='contained' style={{ background: '#43a047', color: 'white', textTransform: 'capitalize' }} fullWidth>Guardar</Button>
+                    </form>
+                </Paper>
+            </Dialog>
         </>
     )
 }

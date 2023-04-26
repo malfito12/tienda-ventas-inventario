@@ -88,7 +88,7 @@ export default function RegisterProduct() {
                 <StyledBreadcrumb label="Ingreso de Productos" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/home/maindrawer/registro-producto/${id}`)} />
                 <StyledBreadcrumb label="Movimiento Caja Chica"  onClick={() => navigate(`/home/maindrawer/ingresos-egresos/${id}`)} />
             </Breadcrumbs>
-            <Typography variant='h6' className={classes.inputText} align='center'>REGISTRAR INGRESOS DE PRODUCTOS</Typography>
+            <Typography variant='h6' className={classes.inputText} style={{color:'#e0e0e0'}} align='center'>REGISTRAR INGRESOS DE PRODUCTOS</Typography>
             <Grid container justifyContent='center' alignItems='center'>
                 <Grid item xs={12} sm={5}>
                     <form onSubmit={postProduct}>

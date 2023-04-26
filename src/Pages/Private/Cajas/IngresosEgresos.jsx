@@ -74,7 +74,7 @@ export default function IngresosEgresos() {
         <StyledBreadcrumb label="Ingreso de Productos" onClick={() => navigate(`/home/maindrawer/registro-producto/${id}`)} />
         <StyledBreadcrumb label="Movimiento Caja Chica" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/home/maindrawer/ingresos-egresos/${id}`)} />
       </Breadcrumbs>
-      <Typography variant='h6' className={classes.inputText} align='center'>REGISTRAR MOVIMIENTO CAJA CHICA</Typography>
+      <Typography variant='h6' className={classes.inputText} style={{color:'#e0e0e0'}}  align='center'>REGISTRAR MOVIMIENTO CAJA CHICA</Typography>
       <Grid container justifyContent='center' alignItems='center'>
         <Grid item xs={12} sm={5}>
           <form onSubmit={postIngresoEgreso}>

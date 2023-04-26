@@ -8,7 +8,7 @@ import { AuthContext } from '../../Components/Atoms/AuthContext';
 const ipcRenderer = window.require('electron').ipcRenderer
 
 const Login = () => {
-    const { secondLogin,rolUser } = useContext(AuthContext)
+    const { secondLogin } = useContext(AuthContext)
     const classes = useStyles()
     const [viewPass, setViewPass] = useState(false)
     const userName = useRef()
@@ -32,9 +32,9 @@ const Login = () => {
                         return
                     }
                     secondLogin()
-                    rolUser(response.rol_name)
                     window.sessionStorage.setItem('user', response.user_id)
                     window.sessionStorage.setItem('user_name', response.people_name)
+                    window.sessionStorage.setItem('rol', response.rol_name)
                 })
         } catch (error) {
             Swal.fire('Error', error, 'error')
@@ -48,7 +48,7 @@ const Login = () => {
         <Container fixed>
             <div className={classes.form}>
 
-                <Typography variant='h5' align='center' className={classes.inputText}>INICIAR SESION</Typography>
+                <Typography variant='h5' align='center' className={classes.inputTextTitle}>INICIAR SESION</Typography>
                 <Grid container justifyContent='center' alignItems='center'>
                     <form onSubmit={iniciarSesion}>
                         <Grid item xs={12}>
@@ -60,6 +60,7 @@ const Login = () => {
                                     size='small'
                                     inputRef={userName}
                                     required
+                                    style={{background:'white',borderRadius:5}}
                                 />
                             </div>
                             <div className={classes.inputText}>
@@ -70,6 +71,7 @@ const Login = () => {
                                     size='small'
                                     inputRef={userPass}
                                     type={viewPass ? 'type' : 'password'}
+                                    style={{background:'white',borderRadius:5}}
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position='end'>
@@ -96,6 +98,11 @@ const Login = () => {
 export default Login
 
 const useStyles = makeStyles((theme) => ({
+    inputTextTitle: {
+        marginTop: 10,
+        marginBottom: 10,
+        fontWeight:'bold',
+    },
     inputText: {
         marginTop: 10,
         marginBottom: 10
