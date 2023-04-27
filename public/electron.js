@@ -3,13 +3,13 @@ const path = require('path')
 const isDev = require('electron-is-dev')
 // require('../src/database/dbConnection')
 
-require('../src/backend/Models/loginModels')
-require('../src/backend/Models/sucursalModels')
-require('../src/backend/Models/unidadMedidaModels')
-require('../src/backend/Models/typeProductModels')
-require('../src/backend/Models/productModels')
-require('../src/backend/Models/userModels')
-require('../src/backend/Models/clientModels')
+require('./backend/Models/loginModels')
+require('./backend/Models/sucursalModels')
+require('./backend/Models/unidadMedidaModels')
+require('./backend/Models/typeProductModels')
+require('./backend/Models/productModels')
+require('./backend/Models/userModels')
+require('./backend/Models/clientModels')
 // require('./models/sucursalsModel')
 
 let win
@@ -18,6 +18,7 @@ function createWindow() {
   win = new BrowserWindow({
     // width: 1200,
     // height: 800,
+    icon:path.join(__dirname, "../assets/icons/icon.ico"),
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
@@ -26,7 +27,7 @@ function createWindow() {
       // preload: path.join(__dirname, 'preload.js')
     }
   })
-  // win.removeMenu()
+  win.removeMenu()
   win.maximize()
   win.show()
 

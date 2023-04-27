@@ -1,6 +1,10 @@
 {
   "name": "ventas-inventarios",
   "version": "0.1.0",
+  "description": "App Administración",
+  "author": "malfito12",
+  "main": "public/electron.js",
+  "homepage": "./",
   "private": true,
   "dependencies": {
     "@material-ui/core": "4.12.4",
@@ -8,6 +12,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "cross-env": "^7.0.3",
     "electron-is-dev": "^2.0.0",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.5.28",
@@ -23,7 +28,6 @@
     "uuid": "^9.0.0",
     "web-vitals": "^2.1.4"
   },
-  "main": "public/electron.js",
   "scripts": {
     "react-start": "react-scripts start",
     "build": "react-scripts build",
@@ -32,6 +36,19 @@
     "start": "concurrently -k \"cross-env BROWSER=none yarn react-start\" \"yarn electron:start\"",
     "electron:build": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js",
     "electron:start": "wait-on tcp:3000 && electron ."
+  },
+  "build":{
+    "appId":"com.malfito12.app",
+    "icon": "assets/icons/icon.ico",
+    "productName": "Administración",
+    "target":"NSIS",
+    "win": {
+      "icon": "assets/icons/icon.ico"
+    },
+    "nsis":{
+      "allowToChangeInstallationDirectory":true,
+      "oneClick":false
+    }
   },
   "eslintConfig": {
     "extends": [
@@ -53,8 +70,8 @@
   },
   "devDependencies": {
     "concurrently": "^7.6.0",
-    "cross-env": "^7.0.3",
     "electron": "^23.1.1",
+    "electron-builder": "23.1.0",
     "electron-packager": "^17.1.1",
     "wait-on": "^7.0.1"
   }

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { HashRouter, Route, Routes } from 'react-router-dom'
 import Home from '../../Pages/Private/Home'
 import AddSucursal from '../../Pages/Private/Sucursales/AddSucursal'
 import Login from '../../Pages/Public/Login'
@@ -31,7 +31,7 @@ const Navigation = () => {
     //     </BrowserRouter>
     // )
     return (
-        <BrowserRouter>
+        <HashRouter>
             <Routes>
                 <Route path='/' element={<RouterPublic />}>
                     <Route index element={<Login />} />
@@ -42,7 +42,7 @@ const Navigation = () => {
                     <Route path='/home/maindrawer/*' element={<MainDrawer />} />
                 </Route>
             </Routes>
-        </BrowserRouter>
+        </HashRouter>
     )
 }
 
