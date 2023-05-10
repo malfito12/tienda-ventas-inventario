@@ -1,8 +1,9 @@
-import { Breadcrumbs, Button, Chip, Container, emphasize, Grid, InputLabel, makeStyles, MenuItem, TextField, Typography, withStyles } from '@material-ui/core'
-import React, { useContext, useRef } from 'react'
+import { Breadcrumbs, Button, Chip, CircularProgress, Container, emphasize, Grid, InputLabel, makeStyles, MenuItem, TextField, Typography, withStyles } from '@material-ui/core'
+import React, { useContext, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { AuthContext } from '../../../Components/Atoms/AuthContext';
+import SaveIcon from '@material-ui/icons/Save';
 
 const ipcRenderer = window.require('electron').ipcRenderer
 
@@ -27,6 +28,7 @@ export default function IngresosEgresos() {
   const classes = useStyles()
   const navigate = useNavigate()
   const { idSuc } = useContext(AuthContext)
+  const [loading,setLoading]=useState(false)
   const { id } = useParams()
   const descripcion = useRef()
   const motivo = useRef()
@@ -55,6 +57,7 @@ export default function IngresosEgresos() {
       sucursal_id: idSuc
     }
     // console.log(data)
+    setLoading(true)
     await ipcRenderer.invoke('post-ingreso-egreso-caja', data)
       .then(resp => {
         const response = JSON.parse(resp)
@@ -66,6 +69,7 @@ export default function IngresosEgresos() {
         e.target.reset()
       })
       .catch(err => Toast.fire({ icon: 'error', title: err }))
+      .finally(()=>setLoading(false))
 
   }
   return (
@@ -133,7 +137,7 @@ export default function IngresosEgresos() {
               </TextField>
             </div>
             <div style={{ marginTop: 20 }}>
-              <Button type='submit' variant='contained' style={{ background: '#43a047', color: 'white' }} fullWidth>Guardar</Button>
+              <Button disabled={loading} endIcon={<SaveIcon/>} type='submit' variant='contained' style={{ background: '#43a047', color: 'white',textTransform:'capitalize' }} fullWidth>{loading?<CircularProgress style={{width:25,height:25}}/>:'Guardar'}</Button>
             </div>
           </form>
         </Grid>

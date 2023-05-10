@@ -1,8 +1,9 @@
-import { Breadcrumbs, Button, Chip, Container, emphasize, Grid, InputLabel, makeStyles, MenuItem, TextField, Typography, withStyles } from '@material-ui/core'
+import { Breadcrumbs, Button, Chip, CircularProgress, Container, emphasize, Grid, InputLabel, makeStyles, MenuItem, TextField, Typography, withStyles } from '@material-ui/core'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { AuthContext } from '../../../Components/Atoms/AuthContext'
+import SaveIcon from '@material-ui/icons/Save';
 
 const ipcRenderer = window.require('electron').ipcRenderer
 
@@ -28,6 +29,9 @@ export default function RegisterProduct() {
     const {id}=useParams()
     const { idSuc } = useContext(AuthContext)
     const [product, setProduct] = useState([])
+    const [typeProduct, setTypeProduct] = useState([])
+    const [loading,setLoading]=useState(false)
+    const product_type = useRef()
     const product_name = useRef()
     const product_amount = useRef()
     const product_amount_unit = useRef()
@@ -35,7 +39,7 @@ export default function RegisterProduct() {
 
 
     useEffect(() => {
-        getProducts()
+        getTypeProducts()
     }, [])
 
     const Toast = Swal.mixin({
@@ -49,10 +53,21 @@ export default function RegisterProduct() {
             toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
     })
+    //-----------GET TYPE PRODUCTS REFERENCES-------------------
+    const getTypeProducts=async()=>{
+        await ipcRenderer.invoke('get-all-type-product',idSuc)
+        .then(resp=>setTypeProduct(JSON.parse(resp)))
+        .catch(err=>console.log(err))
+    }
     //-----------GET PRODUCTS REFERENCES-------------------
-
-    const getProducts = async () => {
-        await ipcRenderer.invoke('get-all-products', idSuc)
+    
+    const getProducts = async (id) => {
+        console.log(id)
+        const data={
+            type_id:id,
+            idSuc:idSuc
+        }
+        await ipcRenderer.invoke('get-specific-products', data)
             .then(resp => setProduct(JSON.parse(resp)))
             .catch(err => console.log(err))
     }
@@ -69,6 +84,7 @@ export default function RegisterProduct() {
             sucursal_id: idSuc
         }
         // console.log(data)
+        setLoading(true)
         await ipcRenderer.invoke('post-product-move-ingreso', data)
             .then(resp => {
                 const response = JSON.parse(resp)
@@ -80,8 +96,14 @@ export default function RegisterProduct() {
                 e.target.reset()
             })
             .catch(err => console.log(err))
+            .finally(()=>setLoading(false))
     }
     // console.log(product)
+    const handleChangeTypeProduct=(e)=>{
+        const id=e.target.value
+        // console.log(id)
+        getProducts(id)
+    }
     return (
         <Container>
             <Breadcrumbs className={classes.spacingBread}>
@@ -93,9 +115,27 @@ export default function RegisterProduct() {
                 <Grid item xs={12} sm={5}>
                     <form onSubmit={postProduct}>
                         <div className={classes.inputText}>
+                            <InputLabel className={classes.inputText} shrink>Tipo de Producto</InputLabel>
+                            <TextField
+                                style={{ background: 'white', borderRadius: 5 }}
+                                variant='outlined'
+                                size='small'
+                                fullWidth
+                                select
+                                required
+                                defaultValue=""
+                                inputRef={product_type}
+                                onChange={handleChangeTypeProduct}
+                            >
+                                {typeProduct.map((e, index) => (
+                                    <MenuItem key={index} value={`${e.type_id}`} >{e.type_name}</MenuItem>
+                                ))}
+                            </TextField>
+                        </div>
+                        <div className={classes.inputText}>
                             <InputLabel className={classes.inputText} shrink>Nombre de Producto</InputLabel>
                             <TextField
-                                style={{ background: 'white', borderRadius: 3 }}
+                                style={{ background: 'white', borderRadius: 5 }}
                                 variant='outlined'
                                 size='small'
                                 fullWidth
@@ -112,7 +152,7 @@ export default function RegisterProduct() {
                         <div className={classes.inputText}>
                             <InputLabel className={classes.inputText} shrink>Cantidad Cajas</InputLabel>
                             <TextField
-                                style={{ background: 'white', borderRadius: 3 }}
+                                style={{ background: 'white', borderRadius: 5 }}
                                 variant='outlined'
                                 fullWidth
                                 size='small'
@@ -126,7 +166,7 @@ export default function RegisterProduct() {
                         <div className={classes.inputText}>
                             <InputLabel className={classes.inputText} shrink>Cantidad Unidades</InputLabel>
                             <TextField
-                                style={{ background: 'white', borderRadius: 3 }}
+                                style={{ background: 'white', borderRadius: 5 }}
                                 variant='outlined'
                                 fullWidth
                                 size='small'
@@ -140,7 +180,7 @@ export default function RegisterProduct() {
                         <div className={classes.inputText}>
                             <InputLabel className={classes.inputText} shrink>Precio</InputLabel>
                             <TextField
-                                style={{ background: 'white', borderRadius: 3 }}
+                                style={{ background: 'white', borderRadius: 5 }}
                                 fullWidth
                                 variant='outlined'
                                 size='small'
@@ -152,7 +192,7 @@ export default function RegisterProduct() {
                             />
                         </div>
                         <div style={{ marginTop: 20 }}>
-                            <Button type='submit' variant='contained' style={{ background: '#43a047', color: 'white' }} fullWidth>Guardar</Button>
+                            <Button disabled={loading} endIcon={<SaveIcon/>} type='submit' variant='contained' style={{ background: '#43a047', color: 'white',textTransform:'capitalize' }} fullWidth>{loading?<CircularProgress style={{width:25,height:25}}/>:'Guardar'}</Button>
                         </div>
                     </form>
                 </Grid>

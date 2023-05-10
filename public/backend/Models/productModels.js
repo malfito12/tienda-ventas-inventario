@@ -17,6 +17,7 @@ router.handle('get-libro-mes',productControllers.getLibroMensual)
 
 router.handle('post-product',productControllers.postProduct)
 router.handle('get-all-products',productControllers.getAllProducts)
+router.handle('get-specific-products',productControllers.getSpecificProducts)
 router.handle('update-product',productControllers.updateProduct)
 router.handle('delete-product',productControllers.deleteProduct)
 

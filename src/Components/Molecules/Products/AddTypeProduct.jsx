@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, Grid, IconButton, InputLabel, makeStyles, Paper, TextField, Typography } from '@material-ui/core'
+import { Box, Button, CircularProgress, Dialog, Grid, IconButton, InputLabel, makeStyles, Paper, TextField, Typography } from '@material-ui/core'
 import React, { useContext, useRef, useState } from 'react'
 import CancelPresentationTwoToneIcon from '@material-ui/icons/CancelPresentationTwoTone';
 import SaveIcon from '@material-ui/icons/Save';
@@ -24,6 +24,7 @@ export function AddTypeProduct(props) {
   const name_type = useRef()
   const classes = useStyles()
   const [openModal, setOpenModal] = useState(false)
+  const [loading,setLoading]=useState(false)
   const openCloseModal = () => {
     setOpenModal(!openModal)
   }
@@ -37,6 +38,7 @@ export function AddTypeProduct(props) {
       user_id: sessionStorage.getItem('user')
     }
     // console.log(data)
+    setLoading(true)
     await ipcRenderer.invoke('post-type-product', data)
       .then(resp => {
         const response = JSON.parse(resp)
@@ -51,6 +53,7 @@ export function AddTypeProduct(props) {
         e.target.reset()
       })
       .catch(err => Swal.fire('Error', err, 'error'))
+      .finally(()=>setLoading(false))
   }
   return (
     <>
@@ -79,7 +82,7 @@ export function AddTypeProduct(props) {
                 />
               </div>
               <div style={{ marginTop: 20 }}>
-                <Button type='submit' variant='contained' style={{ background: '#43a047', color: 'white' }} fullWidth>Guardar</Button>
+                <Button disabled={loading} type='submit' variant='contained' style={{ background: '#43a047', color: 'white',textTransform:'capitalize' }} fullWidth>{loading?<CircularProgress style={{width:25,height:25}}/>:'Guardar'}</Button>
               </div>
 
             </form>
@@ -96,6 +99,7 @@ export function EditTypeProduct(props) {
   const { idSuc } = useContext(AuthContext)
   const [openModal, setOpenModal] = useState(false)
   const classes = useStyles()
+  const [loading,setLoading]=useState(false)
 
   const openCloseModal = (e) => {
     setOpenModal(!openModal)
@@ -109,6 +113,7 @@ export function EditTypeProduct(props) {
       type_id: props.data.type_id
     }
     // console.log(data)
+    setLoading(true)
     await ipcRenderer.invoke('update-type-product', data)
       .then(resp => {
         var response = JSON.parse(resp)
@@ -121,6 +126,7 @@ export function EditTypeProduct(props) {
         openCloseModal()
       })
       .catch(err => Toast.fire({ icon: 'error', title: err }))
+      .finally(()=>setLoading(false))
   }
   return (
     <>
@@ -150,7 +156,7 @@ export function EditTypeProduct(props) {
                 />
               </div>
               <div style={{ marginTop: 20 }}>
-                <Button type='submit' variant='contained' style={{ background: '#43a047', color: 'white' }} fullWidth>Guardar</Button>
+                <Button disabled={loading} type='submit' variant='contained' style={{ background: '#43a047', color: 'white',textTransform:'capitalize' }} fullWidth>{loading?<CircularProgress style={{width:25,height:25}}/>:'Guardar'}</Button>
               </div>
 
             </form>
@@ -173,6 +179,7 @@ export function DeleteType(props) {
     }).then(async resp => {
       if (resp.isConfirmed) {
         // deleteProduct()
+        Swal.showLoading()
         await ipcRenderer.invoke('delete-type-product', id)
           .then(resp => {
             const response = JSON.parse(resp)
@@ -199,6 +206,7 @@ const useStyles = makeStyles((theme) => ({
     background: '#43a047',
     color: 'white',
     marginBottom: 20,
+    textTransform:'capitalize'
   },
   inputText: {
     marginTop: 10,

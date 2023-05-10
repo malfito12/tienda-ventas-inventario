@@ -1,4 +1,4 @@
-import { Box, Breadcrumbs, Button, Chip, Container, Dialog, emphasize, Grid, IconButton, InputLabel, makeStyles, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TableRow, TextField, Typography, withStyles } from '@material-ui/core'
+import { Box, Breadcrumbs, Button, Chip, CircularProgress, Container, Dialog, emphasize, Grid, IconButton, InputLabel, makeStyles, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TableRow, TextField, Typography, withStyles } from '@material-ui/core'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import SearchIcon from '@material-ui/icons/Search';
 import { AuthContext } from '../../../Components/Atoms/AuthContext';
@@ -44,6 +44,9 @@ export const VentaProducts = () => {
   const client_ci = useRef()
   const [client, setClient] = useState([])
   const [venta, setVenta] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [loadingCi, setLoadingCi] = useState(false)
+  const [loadingPost, setLoadingPost] = useState(false)
   const [changeData, setChangeData] = useState({
     product_name: '',
     product_amount: '',
@@ -71,9 +74,11 @@ export const VentaProducts = () => {
 
   //--------------GET PRODUCT------------------
   const getAllProducts = async () => {
+    setLoading(true)
     await ipcRenderer.invoke('get-all-products', idSuc)
       .then(resp => setProducts(JSON.parse(resp)))
       .catch(err => console.log(err))
+      .finally(() => setLoading(false))
   }
 
   //--------------AGREGAR PRODUCTO------------------
@@ -151,7 +156,8 @@ export const VentaProducts = () => {
       data: uno,
       recibo: data
     }
-    console.log(data2)
+    // console.log(data2)
+    setLoadingPost(true)
     await ipcRenderer.invoke('post-product-move-venta', data2)
       .then(resp => {
         const response = JSON.parse(resp)
@@ -169,6 +175,7 @@ export const VentaProducts = () => {
       .catch(err => {
         Toast.fire({ icon: 'error', title: err })
       })
+      .finally(()=>setLoadingPost(false))
     // await ipcRenderer.invoke('post-product-venta',data)
     // .then(resp=>console.log(resp))
     // .catch(err=>console.log(err))
@@ -177,9 +184,18 @@ export const VentaProducts = () => {
 
   const buscarCi = async (e) => {
     e.preventDefault()
+    setLoadingCi(true)
     await ipcRenderer.invoke('search-client-ci', client_ci.current.value)
-      .then(resp => setClient(JSON.parse(resp)))
+      .then(resp => {
+        var response = JSON.parse(resp)
+        if (response.status === 300) {
+          Toast.fire({ icon: 'error', title: response.message })
+          return
+        }
+        setClient(JSON.parse(resp))
+      })
       .catch(err => console.log(err))
+      .finally(() => setLoadingCi(false))
   }
   //---------------------PDF GENERATE---------------------
   const pdfGenerate = () => {
@@ -329,27 +345,32 @@ export const VentaProducts = () => {
                     <SearchIcon />
                   </IconButton>
                 </Grid>
-                {client.length > 0 ? (
-                  <div style={{ background: '#757575', color: 'white', borderRadius: 5, padding: 1 }}>
-                    <Typography align='center' variant='subtitle1' style={{ fontWeight: 'bold' }}>Datos Principales</Typography>
-                    <Typography variant='body1' style={{ marginLeft: 10, marginBottom: 2 }}><span style={{ fontWeight: 'bold' }}> Nombre:</span> {client[0].client_name} {client[0].client_surname_p} {client[0].client_surname_m}</Typography>
-                    <Typography variant='body1' style={{ marginLeft: 10, marginBottom: 10 }}><span style={{ fontWeight: 'bold' }}> Cedula de Identidad:</span> {client[0].client_ci}</Typography>
-                  </div>
-                ) : null}
-                {uno.length > 0 ? (
-                  uno.map((e, index) => (
-                    <Grid key={index} container spacing={1} justifyContent='center' alignItems='center' style={{ padding: 5 }} >
-                      <Grid item xs={12} sm={4}>
-                        <Typography>{e.product_name}</Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={2}>
-                        <Typography>{e.type_amount}</Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={2}>
-                        <Typography>{e.cantidad}</Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={2}>
-                        {/* <TextField
+                {loadingCi ? <CircularProgress /> : (
+                  <>
+                    {client.length > 0 ? (
+                      <div style={{ background: '#757575', color: 'white', borderRadius: 5, padding: 1 }}>
+                        <Typography align='center' variant='subtitle1' style={{ fontWeight: 'bold' }}>Datos Principales</Typography>
+                        <Typography variant='body1' style={{ marginLeft: 10, marginBottom: 2 }}><span style={{ fontWeight: 'bold' }}> Nombre:</span> {client[0].client_name} {client[0].client_surname_p} {client[0].client_surname_m}</Typography>
+                        <Typography variant='body1' style={{ marginLeft: 10, marginBottom: 10 }}><span style={{ fontWeight: 'bold' }}> Cedula de Identidad:</span> {client[0].client_ci}</Typography>
+                      </div>
+                    ) : null}
+                  </>
+                )}
+                <TableContainer style={{ maxHeight: 200 }}>
+                  {uno.length > 0 ? (
+                    uno.map((e, index) => (
+                      <Grid key={index} container spacing={1} justifyContent='center' alignItems='center' style={{ padding: 5 }} >
+                        <Grid item xs={12} sm={4}>
+                          <Typography>{e.product_name}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={2}>
+                          <Typography>{e.type_amount}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={2}>
+                          <Typography>{e.cantidad}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={2}>
+                          {/* <TextField
                           name='price'
                           variant='outlined'
                           size='small'
@@ -357,26 +378,27 @@ export const VentaProducts = () => {
                           onChange={handleChange}
                         // onChange={handleCambio}
                         /> */}
-                        <Typography>{e.price} Bs.</Typography>
+                          <Typography>{e.price} Bs.</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={2} align='center'>
+                          <IconButton onClick={() => openCloseModalData(e)} size='small' style={{ background: '#fb8c00', color: 'white', marginRight: 10 }}>
+                            <EditSharpIcon />
+                          </IconButton>
+                          <IconButton onClick={() => deleteData(e)} size='small' style={{ background: '#f44336', color: 'white' }}>
+                            <DeleteForeverSharpIcon />
+                          </IconButton>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={12} sm={2} align='center'>
-                        <IconButton onClick={() => openCloseModalData(e)} size='small' style={{ background: '#fb8c00', color: 'white', marginRight: 10 }}>
-                          <EditSharpIcon />
-                        </IconButton>
-                        <IconButton onClick={() => deleteData(e)} size='small' style={{ background: '#f44336', color: 'white' }}>
-                          <DeleteForeverSharpIcon />
-                        </IconButton>
-                      </Grid>
-                    </Grid>
-                  ))
-                ) : null}
+                    ))
+                  ) : null}
+                </TableContainer>
                 <Grid container spacing={3} direction='row' justifyContent='flex-end' alignItems='center'>
                   <InputLabel>Precio Total</InputLabel>
                   <TextField
                     value={`${nose.toFixed(2)} Bs.`}
                     variant='outlined'
                     size='small'
-                    style={{ margin: 15 }}
+                    style={{ margin:15}}
                     required
                   />
                 </Grid>
@@ -387,21 +409,14 @@ export const VentaProducts = () => {
                     defaultValue={nose}
                     variant='outlined'
                     size='small'
-                    style={{ margin: 15 }}
+                    style={{ marginLeft: 15,marginRight:15 }}
                     required
                   />
                 </Grid>
-                {venta === false ? (
-                  <Button type='submit' variant='contained' fullWidth size='small' endIcon={<SaveIcon />} style={{ background: '#43a047', color: 'white', textTransform: 'capitalize', marginTop: 15 }}>Realizar Venta</Button>
-                ) : (
-                  <Button disabled type='submit' variant='contained' fullWidth size='small' endIcon={<SaveIcon />} style={{ background: '#bdbdbd', color: '#757575', textTransform: 'capitalize', marginTop: 15 }}>Realizar Venta</Button>
-                )}
+                <Button disabled={venta} type='submit' variant='contained' fullWidth size='small' endIcon={<SaveIcon />} style={venta?{background: '#bdbdbd', color: '#757575', textTransform: 'capitalize', marginTop: 10 }:{background: '#43a047', color: 'white', textTransform: 'capitalize', marginTop: 15}}>{loadingPost?<CircularProgress style={{width:25,height:25}}/>:'Realizar Venta'}</Button>
               </form>
-              {venta === true ? (
-                <Button onClick={pdfGenerate} variant='contained' fullWidth size='small' endIcon={<PrintIcon />} style={{ background: '#1e88e5', color: 'white', textTransform: 'capitalize', marginTop: 10 }}>Imprimir Recibo</Button>
-              ) : (
-                <Button disabled onClick={pdfGenerate} variant='contained' fullWidth size='small' endIcon={<PrintIcon />} style={{ background: '#bdbdbd', color: '#757575', textTransform: 'capitalize', marginTop: 10 }}>Imprimir Recibo</Button>
-              )}
+              <Button disabled={!venta} onClick={pdfGenerate} variant='contained' fullWidth size='small' endIcon={<PrintIcon />} style={!venta?{background: '#bdbdbd', color: '#757575', textTransform: 'capitalize', marginTop: 10 }:{ background: '#1e88e5', color: 'white', textTransform: 'capitalize', marginTop: 10 }}>Imprimir Recibo</Button>
+              
             </Paper>
           </Grid>
           <Grid item xs={12} sm={7}>
@@ -447,7 +462,11 @@ export const VentaProducts = () => {
                         </TableCell>
                       </TableRow>
                     ))
-                  ) : null}
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={6} align='center'>{loading ? <CircularProgress /> : 'No Existe Información'}</TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -525,7 +544,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 10
   },
   spacingBread: {
-    marginTop: 20,
+    // marginTop: 10,
     marginBottom: 20,
   },
   buttonSave: {

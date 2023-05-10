@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, Grid, IconButton, InputAdornment, makeStyles, Menu, MenuItem, Paper, TextField, Tooltip, Typography } from '@material-ui/core'
+import { Box, Button, CircularProgress, Dialog, Grid, IconButton, InputAdornment, makeStyles, Menu, MenuItem, Paper, TextField, Tooltip, Typography } from '@material-ui/core'
 import React, { useEffect, useRef, useState } from 'react'
 import SaveIcon from '@material-ui/icons/Save';
 import Swal from 'sweetalert2';
@@ -30,6 +30,7 @@ export function AddUser(props) {
     const classes = useStyles()
     const [openModal, setOpenModal] = useState(false)
     const [rols, setRols] = useState([])
+    const [loading, setLoading] = useState(false)
     const name = useRef()
     const user_name = useRef()
     const user_email = useRef()
@@ -66,6 +67,7 @@ export function AddUser(props) {
             rol_id: user_rol.current.value,
         }
         // console.log(data)
+        setLoading(true)
         await ipcRenderer.invoke('post-user', data)
             .then(resp => {
                 const response = JSON.parse(resp)
@@ -78,11 +80,12 @@ export function AddUser(props) {
                 props.getUsers()
             })
             .catch(err => Toast.fire({ icon: 'error', title: err }))
+            .finally(() => setLoading(false))
 
     }
     return (
         <>
-            <Button onClick={openCloseModalAdd} variant='contained' endIcon={<PersonAddTwoToneIcon />} size='small' className={classes.buttonSave} style={{ textTransform: 'capitalize' }}>Agregar Usuario</Button>
+            <Button onClick={openCloseModalAdd} variant='contained' endIcon={<PersonAddTwoToneIcon />} size='small' className={classes.buttonSave} style={{ textTransform: 'capitalize', margin: 5 }}>Agregar Usuario</Button>
             <Dialog
                 open={openModal}
                 onClose={openCloseModalAdd}
@@ -150,7 +153,7 @@ export function AddUser(props) {
                                 ) : null}
                             </TextField>
                             <div style={{ marginTop: 15 }}>
-                                <Button endIcon={<SaveIcon />} type='submit' variant='contained' style={{ background: '#43a047', color: 'white' }} fullWidth>Registrar</Button>
+                                <Button disabled={loading} endIcon={<SaveIcon />} type='submit' variant='contained' style={{ background: '#43a047', color: 'white', textTransform: 'capitalize' }} fullWidth>{loading ? <CircularProgress style={{ width: 25, height: 25 }} /> : 'Registrar'}</Button>
                             </div>
                         </form>
                     </Grid>
@@ -163,6 +166,7 @@ export function AddUser(props) {
 export function EditUser(props) {
     const classes = useStyles()
     const [openModal, setOpenModal] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [rols, setRols] = useState([])
     const name = useRef()
     const user_name = useRef()
@@ -192,6 +196,7 @@ export function EditUser(props) {
             rol_id: user_rol.current.value,
             user_id: props.data.user_id
         }
+        setLoading(true)
         await ipcRenderer.invoke('update-user', data)
             .then(resp => {
                 const response = JSON.parse(resp)
@@ -204,6 +209,7 @@ export function EditUser(props) {
                 props.getUsers()
             })
             .catch(err => Toast.fire({ icon: 'error', title: err }))
+            .finally(() => setLoading(false))
 
     }
     return (
@@ -265,7 +271,7 @@ export function EditUser(props) {
                                 ) : null}
                             </TextField>
                             <div style={{ marginTop: 15 }}>
-                                <Button endIcon={<SaveIcon />} type='submit' variant='contained' style={{ background: '#43a047', color: 'white', textTransform: 'capitalize' }} fullWidth>Guardar</Button>
+                                <Button disabled={loading} endIcon={<SaveIcon />} type='submit' variant='contained' style={{ background: '#43a047', color: 'white', textTransform: 'capitalize' }} fullWidth>{loading ? <CircularProgress /> : 'Guardar'}</Button>
                             </div>
                         </form>
                     </Grid>
@@ -278,6 +284,7 @@ export function EditUser(props) {
 export function DeleteUser(props) {
     // console.log(props.data.user_status)
     const [openDrop, setOpenDrop] = useState(null)
+    const [loading, setLoading] = useState(false)
     const openDropDown = (e) => {
         setOpenDrop(e.currentTarget)
     }
@@ -291,6 +298,7 @@ export function DeleteUser(props) {
             user_status: num,
             user_id: props.data.user_id
         }
+        setLoading(true)
         await ipcRenderer.invoke('status-user', data)
             .then(resp => {
                 const response = JSON.parse(resp)
@@ -303,15 +311,18 @@ export function DeleteUser(props) {
                 props.getUsers()
             })
             .catch(err => Toast.fire({ icon: 'error', title: err }))
+            .finally(() => setLoading(false))
     }
     return (
         <>
-            <Tooltip title='Estado'>
-                {props.data.user_status === 'BAJA'
-                    ? <IconButton size='small' onClick={openDropDown} style={{ background: '#f44336', color: 'white' }}><LockSharpIcon /></IconButton>
-                    : <IconButton size='small' onClick={openDropDown} style={{ background: '#43a047', color: 'white' }}><LockOpenSharpIcon /></IconButton>
-                }
-            </Tooltip>
+            {loading ? <CircularProgress style={{width:20,height:20}} /> : (
+                <Tooltip title='Estado'>
+                    {props.data.user_status === 'BAJA'
+                        ? <IconButton size='small' onClick={openDropDown} style={{ background: '#f44336', color: 'white' }}><LockSharpIcon /></IconButton>
+                        : <IconButton size='small' onClick={openDropDown} style={{ background: '#43a047', color: 'white' }}><LockOpenSharpIcon /></IconButton>
+                    }
+                </Tooltip>
+            )}
             <Menu
                 getContentAnchorEl={null}
                 anchorEl={openDrop}
@@ -337,6 +348,7 @@ export function CambioPass(props) {
     const [openModal, setOpenModal] = useState(false)
     const [viewPass1, setViewPass1] = useState(false)
     const [viewPass2, setViewPass2] = useState(false)
+    const [loading,setLoading]=useState(false)
     const newPass = useRef()
     const repeatNewPass = useRef()
     const openCloseModalPass = () => {
@@ -360,7 +372,8 @@ export function CambioPass(props) {
             reNewPass: repeatNewPass.current.value,
             user_id: props.data.user_id
         }
-        console.log(data)
+        // console.log(data)
+        setLoading(true)
         await ipcRenderer.invoke('change-new-pass', data)
             .then(resp => {
                 var response = JSON.parse(resp)
@@ -373,6 +386,7 @@ export function CambioPass(props) {
                 openCloseModalPass()
             })
             .catch(err => Toast.fire({ icon: 'error', title: err }))
+            .finally(()=>setLoading(false))
     }
     return (
         <>
@@ -427,7 +441,7 @@ export function CambioPass(props) {
                                 )
                             }}
                         />
-                        <Button endIcon={<SaveIcon />} type='submit' variant='contained' style={{ background: '#43a047', color: 'white', textTransform: 'capitalize' }} fullWidth>Guardar</Button>
+                        <Button disabled={loading} endIcon={<SaveIcon />} type='submit' variant='contained' style={{ background: '#43a047', color: 'white', textTransform: 'capitalize' }} fullWidth>{loading?<CircularProgress style={{width:25,height:25}}/>:'Guardar'}</Button>
                     </form>
                 </Paper>
             </Dialog>

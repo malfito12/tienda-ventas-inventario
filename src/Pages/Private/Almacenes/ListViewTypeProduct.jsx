@@ -5,7 +5,7 @@ import Chip from '@material-ui/core/Chip';
 import HomeIcon from '@material-ui/icons/Home';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Container, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@material-ui/core';
+import { Button, CircularProgress, Container, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@material-ui/core';
 import {AddTypeProduct, DeleteType, EditTypeProduct} from '../../../Components/Molecules/Products/AddTypeProduct';
 import { AuthContext } from '../../../Components/Atoms/AuthContext';
 const ipcRenderer = window.require('electron').ipcRenderer
@@ -33,14 +33,17 @@ export default function ListViewTypeProduct() {
     const { id } = useParams()
     const classes = useStyles()
     const [type, setType] = useState([])
+    const [loading,setLoading]=useState(false)
     useEffect(() => {
         getAllUnidadMedida()
     }, [])
 
     const getAllUnidadMedida = async () => {
+        setLoading(true)
         await ipcRenderer.invoke('get-all-type-product',idSuc)
             .then(resp => setType(JSON.parse(resp)))
             .catch(err => console.log(err))
+            .finally(()=>setLoading(false))
     }
     return (
         <Container>
@@ -77,7 +80,11 @@ export default function ListViewTypeProduct() {
                                     </TableCell>
                                 </TableRow>
                             ))
-                        ) : (null)}
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={3} align='center'>{loading?<CircularProgress/>:'No Existe Información'}</TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>

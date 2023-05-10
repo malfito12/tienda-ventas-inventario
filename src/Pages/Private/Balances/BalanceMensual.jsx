@@ -1,4 +1,4 @@
-import { Box, Breadcrumbs, Button, Container, emphasize, Grid, makeStyles, Menu, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, withStyles } from '@material-ui/core'
+import { Box, Breadcrumbs, Button, CircularProgress, Container, emphasize, Grid, makeStyles, Menu, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, withStyles } from '@material-ui/core'
 import React, { useContext, useRef, useState } from 'react'
 import Chip from '@material-ui/core/Chip';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -32,6 +32,7 @@ export default function BalanceMensual() {
   const { idSuc } = useContext(AuthContext)
   const [libro, setLibro] = useState([])
   const [total, setTotal] = useState([])
+  const [loading,setLoading]=useState(false)
   const mes = useRef()
   const anio = useRef()
 
@@ -68,6 +69,7 @@ export default function BalanceMensual() {
       anio: anio.current.value,
       sucursal_id: idSuc
     }
+    setLoading(true)
     await ipcRenderer.invoke('get-libro-mes', data)
       .then(resp => {
         var response = JSON.parse(resp)
@@ -80,6 +82,7 @@ export default function BalanceMensual() {
         Toast.fire({ icon: 'success', title: response.message })
       })
       .catch(err => Toast.fire({ icon: 'error', title: err }))
+      .finally(()=>setLoading(false))
   }
   // console.log(libro)
   // console.log(total)
@@ -94,7 +97,7 @@ export default function BalanceMensual() {
       <Grid container spacing={2}>
         <Grid item xs={12} sm={4}>
           <Paper component={Box} p={2}>
-            <Typography variant='subtitle1' align='center' style={{ marginBottom: 20 }}>Busqueda Balance Semana</Typography>
+            <Typography variant='subtitle1' align='center' style={{ marginBottom: 20 }}>Busqueda Balance Mes</Typography>
             <form onSubmit={getLibroMes}>
               <TextField
                 label='Mes de Registro'
@@ -150,7 +153,7 @@ export default function BalanceMensual() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell align='center' colSpan={4}>No hay Información</TableCell>
+                    <TableCell align='center' colSpan={4}>{loading?<CircularProgress/>:'No hay Información'}</TableCell>
                   </TableRow>
                 )}
               </TableBody>

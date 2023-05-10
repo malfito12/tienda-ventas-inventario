@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, Grid, makeStyles, Paper, TextField, Typography } from '@material-ui/core'
+import { Box, Button, CircularProgress, Dialog, Grid, makeStyles, Paper, TextField, Typography } from '@material-ui/core'
 import React, { useRef, useState } from 'react'
 import AddToPhotosTwoToneIcon from '@material-ui/icons/AddToPhotosTwoTone';
 import SaveIcon from '@material-ui/icons/Save';
@@ -21,6 +21,7 @@ const Toast = Swal.mixin({
 export function AddClient(props) {
     const classes = useStyles()
     const [openModal, setOpenModal] = useState(false)
+    const [loading,setLoading]=useState(false)
     const client_name = useRef()
     const client_surname_p = useRef()
     const client_surname_m = useRef()
@@ -45,6 +46,7 @@ export function AddClient(props) {
             user_id: sessionStorage.getItem('user')
         }
         // console.log(data)
+        setLoading(true)
         await ipcRenderer.invoke('register-client', data)
             .then(resp=>{
                 var response=JSON.parse(resp)
@@ -57,10 +59,11 @@ export function AddClient(props) {
                 props.getClients()
             })
             .catch(err=>Toast.fire({ icon: 'error', title: err }))
+            .finally(()=>setLoading(false))
     }
     return (
         <>
-            <Button onClick={openCloseModal} variant='outlined' size='small' className={classes.buttonSave} endIcon={<AddToPhotosTwoToneIcon />} style={{ textTransform: 'capitalize' }}>Registrar Cliente</Button>
+            <Button onClick={openCloseModal} variant='outlined' size='small' className={classes.buttonSave} endIcon={<AddToPhotosTwoToneIcon />} style={{ textTransform: 'capitalize',margin:5 }}>Registrar Cliente</Button>
             <Dialog open={openModal} onClose={openCloseModal} maxWidth='xs'>
                 <Paper component={Box} p={3}>
                     <Typography variant='subtitle2' align='center'>REGISTRAR CLIENTE</Typography>
@@ -120,7 +123,7 @@ export function AddClient(props) {
                                 className={classes.alignText}
                                 inputRef={client_address}
                             />
-                            <Button endIcon={<SaveIcon />} type='submit' variant='contained' style={{ background: '#43a047', color: 'white' }} fullWidth>Registrar</Button>
+                            <Button disabled={loading} endIcon={<SaveIcon />} type='submit' variant='contained' style={{ background: '#43a047', color: 'white',textTransform:'capitalize' }} fullWidth>{loading?<CircularProgress style={{width:25,height:25}}/>:'Registrar'}</Button>
                         </Grid>
                     </form>
                 </Paper>
@@ -130,6 +133,7 @@ export function AddClient(props) {
 }
 export function UpdateClient(props) {
     const [openModal, setOpenModal] = useState(false)
+    const [loading,setLoading]=useState(false)
     const client_name = useRef()
     const client_surname_p = useRef()
     const client_surname_m = useRef()
@@ -152,6 +156,7 @@ export function UpdateClient(props) {
             client_address: client_address.current.value,
             client_id:props.data.client_id
         }
+        setLoading(true)
         await ipcRenderer.invoke(`update-client`,data)
         .then(resp=>{
             var response=JSON.parse(resp)
@@ -164,6 +169,7 @@ export function UpdateClient(props) {
             openCloseModal()
         })
         .catch(err=>Toast.fire({ icon: 'error', title: err }))
+        .finally(()=>setLoading(false))
     }
     return (
         <>
@@ -233,7 +239,7 @@ export function UpdateClient(props) {
                                 inputRef={client_address}
                                 defaultValue={props.data.client_address}
                             />
-                            <Button endIcon={<SaveIcon />} type='submit' variant='contained' style={{ background: '#43a047', color: 'white', textTransform: 'capitalize' }} fullWidth>Guardar</Button>
+                            <Button disabled={loading} endIcon={<SaveIcon />} type='submit' variant='contained' style={{ background: '#43a047', color: 'white', textTransform: 'capitalize' }} fullWidth>{loading?<CircularProgress style={{width:25,height:25}}/>:'Guardar'}</Button>
                         </Grid>
                     </form>
                 </Paper>
@@ -254,6 +260,7 @@ export function DeleteClient(props) {
         }).then(async resp => {
           if (resp.isConfirmed) {
             // deleteProduct()
+            Swal.showLoading()
             await ipcRenderer.invoke('delete-client', id)
               .then(resp => {
                 const response = JSON.parse(resp)

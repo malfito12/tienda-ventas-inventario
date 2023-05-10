@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useEffect, useMemo, useReducer, useState } from 'react'
-import Swal from 'sweetalert2'
+
 const ipcRenderer = window.require('electron').ipcRenderer
 
 

@@ -1,4 +1,4 @@
-import { Box, Breadcrumbs, Button, Container, Dialog, emphasize, Grid, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, withStyles } from '@material-ui/core'
+import { Box, Breadcrumbs, Button, CircularProgress, Container, Dialog, emphasize, Grid, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, withStyles } from '@material-ui/core'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import Chip from '@material-ui/core/Chip';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -33,8 +33,9 @@ export default function LibroDiario() {
     const { id } = useParams()
     const { idSuc } = useContext(AuthContext)
     const [libro, setLibro] = useState([])
-    const [dataSemana,setDataSemana]=useState([])
+    const [dataSemana, setDataSemana] = useState([])
     const [openModal, setOpenModal] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const fechaInicio = useRef()
     const fechaFin = useRef()
@@ -49,10 +50,10 @@ export default function LibroDiario() {
         { title: 'Fecha', field: 'to_char' },
         { title: 'Name', field: 'product_name' },
         { title: 'Tipo Producto', field: 'type_name' },
-        { title: 'Ingresos', field: 'move_id', render: (row) => <div>{row.move_id === 2 || row.move_id === 3 ? `${row.product_move_price } Bs.`: ''}</div> },
+        { title: 'Ingresos', field: 'move_id', render: (row) => <div>{row.move_id === 2 || row.move_id === 3 ? `${row.product_move_price} Bs.` : ''}</div> },
         { title: 'Egresos', field: 'move_id', render: (row) => <div>{row.move_id === 4 ? `${row.product_move_price} Bs.` : ''}</div> },
         { title: 'Cantidad', field: 'product_move_amount' },
-        { title: 'Total', field: 'total', render:(row)=><div>{row.total} Bs.</div> },
+        { title: 'Total', field: 'total', render: (row) => <div>{row.total} Bs.</div> },
     ]
     const Toast = Swal.mixin({
         toast: true,
@@ -61,10 +62,10 @@ export default function LibroDiario() {
         timer: 3000,
         timerProgressBar: true,
         didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer)
-          toast.addEventListener('mouseleave', Swal.resumeTimer)
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
-      })
+    })
     const getMoveSemana = async () => {
         await ipcRenderer.invoke('get-all-move-semana', idSuc)
             .then(resp => {
@@ -93,35 +94,37 @@ export default function LibroDiario() {
         total.current = (ingreso.current - egreso.current).toFixed(2)
         setOpenModal(true)
     }
-    const closeModalSemana=()=>{
+    const closeModalSemana = () => {
         setOpenModal(false)
     }
     const postLibroSemana = async (e) => {
         e.preventDefault()
-        const data={
-            ingreso:ingreso.current,
-            egreso:egreso.current,
-            total:total.current,
-            fechaInicio:fechaInicio.current.value,
-            fechaFin:fechaFin.current.value,
-            sucursal_id:idSuc,
+        const data = {
+            ingreso: ingreso.current,
+            egreso: egreso.current,
+            total: total.current,
+            fechaInicio: fechaInicio.current.value,
+            fechaFin: fechaFin.current.value,
+            sucursal_id: idSuc,
         }
-        const data2={
-            libro_semana:dataSemana,
-            total_semana:data
+        const data2 = {
+            libro_semana: dataSemana,
+            total_semana: data
         }
-        await ipcRenderer.invoke('post-libro-semana',data2)
-        .then(resp=>{
-            var response=JSON.parse(resp)
-            // console.log(response)
-            if(response.status===300){
-                Toast.fire({ icon: 'error', title: response.message })
-                return
-            }
-            Toast.fire({ icon: 'success', title: response.message })
-            getMoveSemana()
-            closeModalSemana()
-        })
+        setLoading(true)
+        await ipcRenderer.invoke('post-libro-semana', data2)
+            .then(resp => {
+                var response = JSON.parse(resp)
+                // console.log(response)
+                if (response.status === 300) {
+                    Toast.fire({ icon: 'error', title: response.message })
+                    return
+                }
+                Toast.fire({ icon: 'success', title: response.message })
+                getMoveSemana()
+                closeModalSemana()
+            })
+            .finally(() => setLoading(false))
         // .catch(err=>Toast.fire({ icon: 'error', title: err }))
         // console.log(data2)
     }
@@ -168,9 +171,9 @@ export default function LibroDiario() {
             >
                 <Paper component={Box} p={2}>
                     <Typography variant='h6' align='center'>Registro Semanal</Typography>
-                    <Typography variant='subtitle2' style={{color:'red'}} align='center'>Se Recomienda guardar la información de Lunes a Domingo</Typography>
+                    <Typography variant='subtitle2' style={{ color: 'red' }} align='center'>Se Recomienda guardar la información de Lunes a Domingo</Typography>
                     <form onSubmit={postLibroSemana}>
-                        <div style={{margin:15}}>
+                        <div style={{ margin: 15 }}>
                             <Typography variant='h6'>Ingreso: {ingreso.current} Bs.</Typography>
                             <Typography variant='h6'>Egreso: {egreso.current} Bs.</Typography>
                             <Typography variant='h6'>Total: {total.current} Bs.</Typography>
@@ -197,7 +200,7 @@ export default function LibroDiario() {
                                 required
                             />
                         </Grid>
-                        <Button type='submit' variant='contained' fullWidth size='small' endIcon={<SaveIcon />} style={{ background: '#43a047', color: 'white', textTransform: 'capitalize', marginTop: 15 }}>Guardar</Button>
+                        <Button disabled={loading} type='submit' variant='contained' fullWidth size='small' endIcon={<SaveIcon />} style={{ background: '#43a047', color: 'white', textTransform: 'capitalize', marginTop: 15 }}>{loading ? <CircularProgress style={{ width: 25, height: 25 }} /> : 'Guardar'}</Button>
                     </form>
                 </Paper>
             </Dialog>

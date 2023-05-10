@@ -5,7 +5,7 @@ import Chip from '@material-ui/core/Chip';
 import HomeIcon from '@material-ui/icons/Home';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Container, IconButton, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@material-ui/core';
+import { Button, CircularProgress, Container, Grid, IconButton, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from '@material-ui/core';
 import { AddProduct, UpdateProduct } from '../../../Components/Molecules/Products/AddProduct';
 import { AuthContext } from '../../../Components/Atoms/AuthContext';
 import DeleteForeverSharpIcon from '@material-ui/icons/DeleteForeverSharp';
@@ -37,6 +37,7 @@ export default function ListViewProduct() {
     const { id } = useParams()
     const classes = useStyles()
     const [products, setProducts] = useState([])
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         getAllProducts()
@@ -44,9 +45,13 @@ export default function ListViewProduct() {
 
     //--------------GET PRODUCT------------------
     const getAllProducts = async () => {
+        setLoading(true)
         await ipcRenderer.invoke('get-all-products', idSuc)
-            .then(resp => setProducts(JSON.parse(resp)))
+            .then(resp => {
+                setProducts(JSON.parse(resp))
+            })
             .catch(err => console.log(err))
+            .finally(() => setLoading(false))
     }
 
     const Toast = Swal.mixin({
@@ -89,7 +94,7 @@ export default function ListViewProduct() {
             icon: 'warning',
         }).then(async resp => {
             if (resp.isConfirmed) {
-                // deleteProduct()
+                Swal.showLoading()
                 await ipcRenderer.invoke('delete-product', id)
                     .then(resp => {
                         const response = JSON.parse(resp)
@@ -102,8 +107,20 @@ export default function ListViewProduct() {
                         // Swal.fire('Success', response.message, 'success')
                         getAllProducts()
                     })
+                    .catch(err=>Toast.fire({ icon: 'success', title: err }))
             }
         })
+    }
+    //---------------------------BUSCADOR---------------------------------------------
+    const [buscador, setBuscador] = useState("")
+
+    const buscarProducto = (buscador) => {
+        return function (x) {
+            return x.product_name.includes(buscador) ||
+                x.product_name.toLowerCase().includes(buscador) ||
+                x.product_code.toString().includes(buscador) ||
+                !buscador
+        }
     }
 
     // console.log(products)
@@ -115,9 +132,16 @@ export default function ListViewProduct() {
                 <StyledBreadcrumb label="Tipo de Producto" onClick={() => navigate(`/home/maindrawer/tipo-producto/${id}`)} />
                 <StyledBreadcrumb label="Unidad de Medida" onClick={() => navigate(`/home/maindrawer/unidad-medida/${id}`)} />
             </Breadcrumbs>
-            <div align='right'>
+            <Grid container direction='row' justifyContent='flex-end' alignItems='center' item xs={12} style={{ marginBottom: 10 }}>
                 <AddProduct getProducts={getAllProducts} />
-            </div>
+                <Typography variant='subtitle1' style={{ marginRight: 10, marginLeft: 25, color: '#e0e0e0' }} >Buscar</Typography>
+                <TextField
+                    variant='outlined'
+                    size='small'
+                    style={{ width: '30%', background: 'white', borderRadius: 5 }}
+                    onChange={e => setBuscador(e.target.value)}
+                />
+            </Grid>
             <TableContainer component={Paper} style={{ maxHeight: 500, }}  >
                 <Table stickyHeader>
                     <TableHead>
@@ -132,12 +156,12 @@ export default function ListViewProduct() {
                     </TableHead>
                     <TableBody>
                         {products.length > 0 ? (
-                            products.map((e, index) => (
+                            products.filter(buscarProducto(buscador)).map((e, index) => (
                                 <TableRow key={index}>
                                     <TableCell size='small'>{index + 1}</TableCell>
                                     <TableCell size='small' align='center'>
                                         <IconButton size='small' onClick={() => openImages(e.product_image)}>
-                                            <img src={e.product_image} style={{ width: '50px', height: '50px',borderRadius:25 }} alt='#' />
+                                            <img src={e.product_image} style={{ width: '50px', height: '50px', borderRadius: 25 }} alt='#' />
                                         </IconButton>
                                     </TableCell>
                                     <TableCell size='small' align='center'>{e.product_name}</TableCell>
@@ -159,7 +183,11 @@ export default function ListViewProduct() {
                                     </TableCell>
                                 </TableRow>
                             ))
-                        ) : null}
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={6} align='center'>{loading ? <CircularProgress /> : 'No Existe Informacion'}</TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -177,9 +205,9 @@ const useStyles = makeStyles((theme) => ({
         color: 'white',
         marginBottom: 20,
     },
-    colorHead:{
-        background:'#424242',
-        color:'white',
-        padding:13
-      }
+    colorHead: {
+        background: '#424242',
+        color: 'white',
+        padding: 13
+    }
 }))

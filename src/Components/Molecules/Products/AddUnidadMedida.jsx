@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, Grid, IconButton, InputLabel, makeStyles, Paper, TextField, Typography } from '@material-ui/core'
+import { Box, Button, CircularProgress, Dialog, Grid, IconButton, InputLabel, makeStyles, Paper, TextField, Typography } from '@material-ui/core'
 import React, { useContext, useRef, useState } from 'react'
 import SaveIcon from '@material-ui/icons/Save';
 import CancelPresentationTwoToneIcon from '@material-ui/icons/CancelPresentationTwoTone';
@@ -25,6 +25,7 @@ export function AddUnidadMedida(props) {
   const classes = useStyles()
   const [openModal, setOpenModal] = useState(false)
   const {idSuc}=useContext(AuthContext)
+  const [loading,setLoading]=useState(false)
 
   const openCloseModal = () => {
     setOpenModal(!openModal)
@@ -39,6 +40,7 @@ export function AddUnidadMedida(props) {
       sucursal_id:idSuc
     }
     // console.log(data)
+    setLoading(true)
     await ipcRenderer.invoke('post-unidad-medida', data)
       .then(resp => {
         const response = JSON.parse(resp)
@@ -53,6 +55,7 @@ export function AddUnidadMedida(props) {
         e.target.reset()
       })
       .catch(err => Swal.fire('Error', err, 'error'))
+      .finally(()=>setLoading(false))
   }
   return (
     <>
@@ -82,7 +85,7 @@ export function AddUnidadMedida(props) {
                 />
               </div>
               <div style={{ marginTop: 20 }}>
-                <Button type='submit' variant='contained' style={{ background: '#43a047', color: 'white' }} fullWidth>Guardar</Button>
+                <Button disabled={loading} type='submit' variant='contained' style={{ background: '#43a047', color: 'white',textTransform:'capitalize' }} fullWidth>{loading?<CircularProgress style={{width:25,height:25}}/>:'Guardar'}</Button>
               </div>
 
             </form>
@@ -99,7 +102,7 @@ export function EditUnidadMedida(props) {
   // console.log(props.data)
   const {idSuc}=useContext(AuthContext)
   const [openModal, setOpenModal] = useState(false)
-
+  const [loading,setLoading]=useState(false)
   const openCloseModal = () => {
     setOpenModal(!openModal)
   }
@@ -112,6 +115,7 @@ export function EditUnidadMedida(props) {
       u_medida_id: props.data.u_medida_id,
       sucursal_id:idSuc
     }
+    setLoading(true)
     await ipcRenderer.invoke('update-unidad-medida', data)
       .then(resp => {
         const response = JSON.parse(resp)
@@ -124,6 +128,7 @@ export function EditUnidadMedida(props) {
         props.getUnidad()
       })
       .catch(err => Toast.fire({ icon: 'error', title: err }))
+      .finally(()=>setLoading(false))
   }
   return (
     <>
@@ -154,7 +159,7 @@ export function EditUnidadMedida(props) {
                 />
               </div>
               <div style={{ marginTop: 20 }}>
-                <Button type='submit' variant='contained' style={{ background: '#43a047', color: 'white' }} fullWidth>Guardar</Button>
+                <Button disabled={loading} type='submit' variant='contained' style={{ background: '#43a047', color: 'white',textTransform:'capitalize' }} fullWidth>{loading?<CircularProgress style={{width:25,height:25}}/>:'Guardar'}</Button>
               </div>
 
             </form>
@@ -191,6 +196,7 @@ export function DeleteUnidadMedida(props) {
     }).then(async resp => {
       if (resp.isConfirmed) {
         // deleteProduct()
+        Swal.showLoading()
         await ipcRenderer.invoke('delete-unidad-medida', id)
           .then(resp => {
             const response = JSON.parse(resp)
@@ -217,6 +223,7 @@ const useStyles = makeStyles((theme) => ({
     background: '#43a047',
     color: 'white',
     marginBottom: 20,
+    textTransform:'capitalize'
   },
   inputText: {
     marginTop: 10,

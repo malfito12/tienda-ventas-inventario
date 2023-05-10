@@ -7,8 +7,8 @@ INSERT INTO rols VALUES ('ADMINISTRADOR'),('SUPERVISOR'),('USUARIO');
 
 CREATE TABLE IF NOT EXISTS users(
 	people_name VARCHAR(50) NOT NULL,
-    user_name VARCHAR (50) NOT NULL,
-	user_email VARCHAR(50) NOT NULL,
+    user_name VARCHAR (50) NOT NULL UNIQUE,
+	user_email VARCHAR(50) NOT NULL UNIQUE,
 	user_password TEXT NOT NULL,
 	user_repeat_password VARCHAR(50) NOT NULL,
     user_status VARCHAR(20) NOT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS products(
     product_price_unit NUMERIC(20,2) NOT NULL,
     product_amount_box INT NOT NULL,
     product_image TEXT,
-    product_code VARCHAR(10) NOT NULL,
+    product_code VARCHAR(10) NOT NULL UNIQUE,
     product_register_date DATE NOT NULL,
     u_medida_id INT NOT NULL,
     type_id INT NOT NULL,

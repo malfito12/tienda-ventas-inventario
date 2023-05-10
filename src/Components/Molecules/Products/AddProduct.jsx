@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, Grid, IconButton, InputLabel, makeStyles, MenuItem, Paper, TextField, Tooltip, Typography } from '@material-ui/core'
+import { Box, Button, CircularProgress, Dialog, Grid, IconButton, InputLabel, makeStyles, MenuItem, Paper, TextField, Tooltip, Typography } from '@material-ui/core'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import SaveIcon from '@material-ui/icons/Save';
 import CancelPresentationTwoToneIcon from '@material-ui/icons/CancelPresentationTwoTone';
@@ -23,6 +23,7 @@ export function AddProduct(props) {
   const { idSuc, user } = useContext(AuthContext)
   const classes = useStyles()
   const [openModal, setOpenModal] = useState(false)
+  const [loading,setLoading]=useState(false)
   const [preview, setPreview] = useState(null)
   const [unidadMedida, setUnidadMedida] = useState([])
   const [type, setType] = useState([])
@@ -70,7 +71,7 @@ export function AddProduct(props) {
       // user_id: user
       user_id: sessionStorage.getItem('user')
     }
-
+    setLoading(true)
     await ipcRenderer.invoke('post-product', data)
       .then(resp => {
         const response = JSON.parse(resp)
@@ -88,6 +89,7 @@ export function AddProduct(props) {
         e.target.reset()
       })
       .catch(err => Swal.fire('Error', err, 'error'))
+      .finally(()=>setLoading(false))
   }
 
   //----------HANDLEcHANGE image------------------
@@ -112,7 +114,7 @@ export function AddProduct(props) {
 
   return (
     <>
-      <Button variant='contained' endIcon={<SaveIcon />} size='small' onClick={openCloseModal} className={classes.buttonSave}>Nuevo Producto</Button>
+      <Button variant='contained' endIcon={<SaveIcon />} size='small' onClick={openCloseModal} className={classes.buttonSave} style={{margin:5, textTransform: 'capitalize'}}>Nuevo Producto</Button>
       <Dialog
         open={openModal}
         onClose={openCloseModal}
@@ -234,14 +236,14 @@ export function AddProduct(props) {
 
                   />
                   <label htmlFor='file-image'>
-                    <Button size='small' style={{ marginTop: '1rem', width: '77%' }} variant='contained' color='primary' component='span' fullWidth>cargar</Button>
+                    <Button size='small' style={{ marginTop: '1rem', width: '77%',textTransform:'capitalize' }} variant='contained' color='primary' component='span' fullWidth>cargar</Button>
                   </label>
                 </div>
 
               </Grid>
             </Grid>
             <div style={{ marginTop: 20 }}>
-              <Button type='submit' variant='contained' style={{ background: '#43a047', color: 'white' }} fullWidth>Guardar</Button>
+              <Button disabled={loading} type='submit' variant='contained' style={{ background: '#43a047', color: 'white', textTransform:'capitalize' }} fullWidth>{loading?<CircularProgress style={{width:25,height:25}}/>:'Guardar'}</Button>
             </div>
           </form>
         </Paper>
@@ -253,10 +255,12 @@ export function AddProduct(props) {
 
 export function UpdateProduct(props) {
   // console.log(props.data)
+  const {idSuc}=useContext(AuthContext)
   const classes = useStyles()
   const [preview, setPreview] = useState(props.data.product_image)
   const [unidadMedida, setUnidadMedida] = useState([])
   const [type, setType] = useState([])
+  const [loading,setLoading]=useState(false)
   const name_product = useRef()
   const type_product = useRef()
   const unidad_product = useRef()
@@ -270,12 +274,12 @@ export function UpdateProduct(props) {
   }, [])
 
   const getUnidadMedida = async () => {
-    await ipcRenderer.invoke('get-all-unidad-medida')
+    await ipcRenderer.invoke('get-all-unidad-medida',idSuc)
       .then(resp => setUnidadMedida(JSON.parse(resp)))
       .catch(err => console.log(err))
   }
   const getType = async () => {
-    await ipcRenderer.invoke('get-all-type-product')
+    await ipcRenderer.invoke('get-all-type-product',idSuc)
       .then(resp => setType(JSON.parse(resp)))
       .catch(err => console.log(err))
   }
@@ -299,6 +303,7 @@ export function UpdateProduct(props) {
       product_id: props.data.product_id
     }
     // console.log(data)
+    setLoading(true)
     await ipcRenderer.invoke('update-product', data)
       .then(resp => {
         const response = JSON.parse(resp)
@@ -311,6 +316,7 @@ export function UpdateProduct(props) {
         props.getProducts()
       })
       .catch(err => Toast.fire({ icon: 'error', title: err }))
+      .finally(()=>setLoading(false))
   }
   //----------HANDLEcHANGE image------------------
   const [changeDataImage, setChangeDataImage] = useState({ image_product: '' })
@@ -464,14 +470,14 @@ export function UpdateProduct(props) {
 
                   />
                   <label htmlFor='file-image'>
-                    <Button size='small' style={{ marginTop: '1rem', width: '77%' }} variant='contained' color='primary' component='span' fullWidth>cargar</Button>
+                    <Button size='small' style={{ marginTop: '1rem', width: '77%',textTransform:'capitalize' }} variant='contained' color='primary' component='span' fullWidth>cargar</Button>
                   </label>
                 </div>
 
               </Grid>
             </Grid>
             <div style={{ marginTop: 20 }}>
-              <Button type='submit' variant='contained' style={{ background: '#43a047', color: 'white' }} fullWidth>Guardar</Button>
+              <Button disabled={loading} type='submit' variant='contained' style={{ background: '#43a047', color: 'white',textTransform:'capitalize' }} fullWidth>{loading?<CircularProgress style={{width:20,height:20}}/>:'Guardar'}</Button>
             </div>
           </form>
         </Paper>

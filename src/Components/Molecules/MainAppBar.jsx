@@ -1,15 +1,19 @@
-import { AppBar, CssBaseline, IconButton, makeStyles, Menu, MenuItem, Toolbar, Typography } from '@material-ui/core'
+import { AppBar, CircularProgress, CssBaseline, IconButton, makeStyles, Menu, MenuItem, Toolbar, Typography } from '@material-ui/core'
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import MenuIcon from '@material-ui/icons/Menu';
 import React, { useContext, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom';
 import { AuthContext } from '../Atoms/AuthContext';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+
 const drawerWidth = 60;
 const MainAppBar = (props) => {
     let location = useLocation()
     const classes = useStyles()
-    const { logout,secondLoguot } = useContext(AuthContext)
+    const { secondLoguot } = useContext(AuthContext)
+    const [loading,setLoading]=useState(false)
     const [openDrop, setOpenDrop] = useState(null)
+
 
     const handleDrawerToggle = () => {
         props.menu()
@@ -22,6 +26,7 @@ const MainAppBar = (props) => {
         setOpenDrop(null)
     }
     const cerrarSesion = () => {
+        setLoading(true)
         secondLoguot()
         // logout()
         closeDropDown()
@@ -52,9 +57,9 @@ const MainAppBar = (props) => {
                     <NavLink style={{ textDecoration: 'none', color: 'white' }} to='/home'>
                         <Typography variant="h6" noWrap>Sucursales</Typography>
                     </NavLink>
-                    <div style={{ flexGrow: 1}} />
+                    <div style={{ flexGrow: 1 }} />
                     <Typography>{window.sessionStorage.getItem('user_name')}</Typography>
-                    <IconButton style={{color:'white'}} onClick={openDropDown}>
+                    <IconButton style={{ color: 'white' }} onClick={openDropDown}>
                         <AccountCircleIcon />
                     </IconButton>
                 </Toolbar>
@@ -74,8 +79,14 @@ const MainAppBar = (props) => {
                 open={Boolean(openDrop)}
                 onClose={closeDropDown}
             >
-                <MenuItem onClick={closeDropDown}>Mi Perfil</MenuItem>
-                <MenuItem onClick={cerrarSesion}>Cerrar Sesion</MenuItem>
+                <MenuItem onClick={closeDropDown}>
+                    <AccountCircleIcon style={{marginRight:10}} />
+                    Mi Perfil
+                </MenuItem>
+                <MenuItem onClick={cerrarSesion}>
+                    {loading?<CircularProgress style={{width:20,height:20}}/>:<ExitToAppIcon style={{ color: 'red',marginRight:10 }} />}
+                    Cerrar Sesion
+                </MenuItem>
             </Menu>
         </>
     )

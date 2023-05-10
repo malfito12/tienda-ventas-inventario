@@ -1,4 +1,4 @@
-import { Avatar, Button, Container, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@material-ui/core'
+import { Avatar, Button, CircularProgress, Container, Grid, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from '@material-ui/core'
 import React, { useEffect, useState } from 'react'
 import { AddUser, CambioPass, DeleteUser, EditUser } from '../../../Components/Molecules/Users/AddUser'
 
@@ -9,15 +9,20 @@ const ListViewUser = () => {
   const [users, setUsers] = useState([])
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [loading,setLoading]=useState(false)
   useEffect(() => {
     getAllUsers()
   }, [])
 
   //-----------GET USERS----------------
   const getAllUsers = async () => {
+    setLoading(true)
     await ipcRenderer.invoke('get-all-users')
-      .then(resp => setUsers(JSON.parse(resp)))
+      .then(resp =>{
+        setUsers(JSON.parse(resp))
+      })
       .catch(err => console.log(err))
+      .finally(()=>setLoading(false))
   }
 
   const handleChangePage = (event, newPage) => {
@@ -27,11 +32,34 @@ const ListViewUser = () => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+  //---------------------------BUSCADOR---------------------------------------------
+  const [buscador, setBuscador] = useState("")
+
+  const buscarUsuario = (buscador) => {
+    return function (x) {
+      return x.people_name.includes(buscador) ||
+        x.people_name.toLowerCase().includes(buscador) ||
+        x.user_name.includes(buscador) ||
+        x.user_name.toLowerCase().includes(buscador) ||
+        x.rol_name.includes(buscador) ||
+        x.rol_name.toLowerCase().includes(buscador) ||
+        !buscador
+    }
+  }
   // console.log(users)
   return (
     <Container>
       <Typography variant='h5' className={classes.alignTextTitle}>Administrar Usuarios</Typography>
-      <AddUser getUsers={getAllUsers} />
+      <Grid container direction='row' justifyContent='flex-end' alignItems='center' item xs={12} style={{ marginBottom: 10 }}>
+        <AddUser getUsers={getAllUsers} />
+        <Typography variant='subtitle1' style={{ marginRight: 10, marginLeft: 25, color: '#e0e0e0' }} >Buscar</Typography>
+        <TextField
+          variant='outlined'
+          size='small'
+          style={{ width: '30%', background: 'white', borderRadius: 5 }}
+          onChange={e => setBuscador(e.target.value)}
+        />
+      </Grid>
       <TableContainer component={Paper} style={{ maxHeight: 500, }}>
         <Table stickyHeader>
           <TableHead >
@@ -48,7 +76,7 @@ const ListViewUser = () => {
           <TableBody>
             {users.length > 0 ? (
               // users.map((e, index) => (
-              users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((e, index) => (
+              users.filter(buscarUsuario(buscador)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((e, index) => (
                 <TableRow key={index}>
                   <TableCell size='small'>{index + 1}</TableCell>
                   <TableCell>
@@ -66,7 +94,11 @@ const ListViewUser = () => {
                   </TableCell>
                 </TableRow>
               ))
-            ) : null}
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} align='center'>{loading?<CircularProgress/>:'No Existe Información'}</TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
@@ -89,7 +121,7 @@ export default ListViewUser
 const useStyles = makeStyles((theme) => ({
   alignTextTitle: {
     marginBottom: 20,
-    color:'#e0e0e0'
+    color: '#e0e0e0'
   },
   colorHead: {
     background: '#424242',

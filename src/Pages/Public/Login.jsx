@@ -1,4 +1,4 @@
-import { Button, Container, Grid, IconButton, InputAdornment, InputLabel, makeStyles, TextField, Typography } from '@material-ui/core'
+import { Button, CircularProgress, Container, Grid, IconButton, InputAdornment, InputLabel, makeStyles, TextField, Typography } from '@material-ui/core'
 import React, { useContext, useRef, useState } from 'react'
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
@@ -7,10 +7,23 @@ import { AuthContext } from '../../Components/Atoms/AuthContext';
 
 const ipcRenderer = window.require('electron').ipcRenderer
 
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'bottom-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+  })
+
 const Login = () => {
     const { secondLogin } = useContext(AuthContext)
     const classes = useStyles()
     const [viewPass, setViewPass] = useState(false)
+    const [loading, setLoading] = useState(false)
     const userName = useRef()
     const userPass = useRef()
 
@@ -19,30 +32,25 @@ const Login = () => {
     }
     const iniciarSesion = async (e) => {
         e.preventDefault()
+        setLoading(true)
         const data = {
             user_name: userName.current.value,
             user_pass: userPass.current.value
         }
-        try {
-            await ipcRenderer.invoke('login', data)
-                .then(resp => {
-                    var response = JSON.parse(resp)
-                    if (response.status === 300) {
-                        Swal.fire('Error', response.message, 'error')
-                        return
-                    }
-                    secondLogin()
-                    window.sessionStorage.setItem('user', response.user_id)
-                    window.sessionStorage.setItem('user_name', response.people_name)
-                    window.sessionStorage.setItem('rol', response.rol_name)
-                })
-        } catch (error) {
-            Swal.fire('Error', error, 'error')
-            console.log(error)
-        }
-        // login(data)
-        // navigate('/home')
-
+        await ipcRenderer.invoke('login', data)
+            .then(resp => {
+                var response = JSON.parse(resp)
+                if (response.status === 300) {
+                    Toast.fire({ icon: 'error', title: response.message })
+                    return
+                }
+                secondLogin()
+                window.sessionStorage.setItem('user', response.user_id)
+                window.sessionStorage.setItem('user_name', response.people_name)
+                window.sessionStorage.setItem('rol', response.rol_name)
+            })
+            .catch(err => Toast.fire({ icon: 'error', title: err }))
+            .finally(() => setLoading(false))
     }
     return (
         <Container fixed>
@@ -60,7 +68,7 @@ const Login = () => {
                                     size='small'
                                     inputRef={userName}
                                     required
-                                    style={{background:'white',borderRadius:5}}
+                                    style={{ background: 'white', borderRadius: 5 }}
                                 />
                             </div>
                             <div className={classes.inputText}>
@@ -71,7 +79,7 @@ const Login = () => {
                                     size='small'
                                     inputRef={userPass}
                                     type={viewPass ? 'type' : 'password'}
-                                    style={{background:'white',borderRadius:5}}
+                                    style={{ background: 'white', borderRadius: 5 }}
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position='end'>
@@ -85,7 +93,7 @@ const Login = () => {
                                 />
                             </div>
                             <div className={classes.inputText}>
-                                <Button type='submit' variant='contained' style={{ background: '#43a047', color: 'white' }} fullWidth>INICIAR SESION</Button>
+                                <Button disabled={loading} type='submit' variant='contained' style={{ background: '#43a047', color: 'white',textTransform: 'capitalize' }} fullWidth>{loading?<CircularProgress style={{width:30,height:30}} />:'Iniciar Sesión'}</Button>
                             </div>
                         </Grid>
                     </form>
@@ -101,7 +109,7 @@ const useStyles = makeStyles((theme) => ({
     inputTextTitle: {
         marginTop: 10,
         marginBottom: 10,
-        fontWeight:'bold',
+        fontWeight: 'bold',
     },
     inputText: {
         marginTop: 10,

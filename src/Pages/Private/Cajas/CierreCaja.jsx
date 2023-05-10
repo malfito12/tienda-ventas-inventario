@@ -1,4 +1,4 @@
-import { Box, Breadcrumbs, Button, Chip, Container, Dialog, emphasize, Grid, makeStyles, MenuItem, Paper, TableContainer, TextField, Typography, withStyles } from '@material-ui/core';
+import { Box, Breadcrumbs, Button, Chip, CircularProgress, Container, Dialog, emphasize, Grid, makeStyles, MenuItem, Paper, TableContainer, TextField, Typography, withStyles } from '@material-ui/core';
 import MaterialTable from 'material-table';
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
@@ -33,6 +33,7 @@ const CierreCaja = () => {
   const [products, setProducts] = useState([])
   const [openModal, setOpenModal] = useState(false)
   const [data, setData] = useState([])
+  const [loading,setLoading]=useState(false)
 
   const anio = useRef()
   const mes = useRef()
@@ -124,6 +125,7 @@ const CierreCaja = () => {
       total_mes: dataMes
     }
     // console.log(data2Mes)
+    setLoading(true)
     await ipcRenderer.invoke('post-balance-mes', data2Mes)
       .then(resp => {
         var response = JSON.parse(resp)
@@ -136,9 +138,10 @@ const CierreCaja = () => {
         closeModalBalance()
       })
       .catch(err => Toast.fire({ icon: 'error', title: err }))
+      .finally(()=>setLoading(false))
 
   }
-  console.log(products)
+  // console.log(products)
   return (
     <>
       <Container>
@@ -212,7 +215,7 @@ const CierreCaja = () => {
                 <MenuItem key={e.id} value={e.name}>{e.name}</MenuItem>
               ))}
             </TextField>
-            <Button type='submit' variant='contained' fullWidth size='small' endIcon={<SaveIcon />} style={{ background: '#43a047', color: 'white', textTransform: 'capitalize', marginTop: 15 }}>Guardar</Button>
+            <Button disabled={loading} type='submit' variant='contained' fullWidth size='small' endIcon={<SaveIcon />} style={{ background: '#43a047', color: 'white', textTransform: 'capitalize', marginTop: 15 }}>{loading?<CircularProgress style={{width:25,height:25}}/>:'Guardar'}</Button>
           </form>
         </Paper>
       </Dialog>

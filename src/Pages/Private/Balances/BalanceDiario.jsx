@@ -1,4 +1,4 @@
-import { Box, Breadcrumbs, Button, Container, emphasize, Grid, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, withStyles } from '@material-ui/core'
+import { Box, Breadcrumbs, Button, CircularProgress, Container, emphasize, Grid, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, withStyles } from '@material-ui/core'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import Chip from '@material-ui/core/Chip';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -32,6 +32,7 @@ export default function BalanceDiario() {
     const { idSuc } = useContext(AuthContext)
     const [libro, setLibro] = useState([])
     const [total, setTotal] = useState([])
+    const [loading,setLoading]=useState(false)
 
     const fechaInicio = useRef()
     const fechaFin = useRef()
@@ -55,6 +56,7 @@ export default function BalanceDiario() {
             fechaFin: fechaFin.current.value,
             sucursal_id: idSuc
         }
+        setLoading(true)
         await ipcRenderer.invoke(`get-libro-semana`, data)
             .then(resp => {
                 var response = JSON.parse(resp)
@@ -67,6 +69,7 @@ export default function BalanceDiario() {
                 Toast.fire({ icon: 'success', title: response.message })
             })
             .catch(err => Toast.fire({ icon: 'error', title: err }))
+            .finally(()=>setLoading(false))
     }
     // console.log(libro)
     // console.log(total)
@@ -135,7 +138,7 @@ export default function BalanceDiario() {
                                     ))
                                 ) : (
                                     <TableRow>
-                                        <TableCell align='center' colSpan={5}>No hay Información</TableCell>
+                                        <TableCell align='center' colSpan={5}>{loading?<CircularProgress/>:'No hay Información'}</TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>

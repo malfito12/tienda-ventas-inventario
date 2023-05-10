@@ -61,13 +61,16 @@ controllers.deleteClient=async(e,args)=>{
         await conn.query(`DELETE FROM clients WHERE client_id=$1`,[args])
         return JSON.stringify({status:200,message:'Cliente eliminado'})
     } catch (error) {
-        return JSON.stringify({status:300,message:'Error, Nose Pudo Eliminar'})
+        return JSON.stringify({status:300,message:'Error, Nose Pudo Eliminar, el cliente tiene ventas registradas'})
     }
 }
 
 controllers.searchClient = async (e, args) => {
     try {
         const result = await conn.query(`SELECT * FROM clients WHERE client_ci=$1`, [args])
+        if(result.rowCount===0){
+            return JSON.stringify({status:300,message:'No se encontró información del Cliente'})
+        }
         return JSON.stringify(result.rows)
     } catch (error) {
         console.log(error)

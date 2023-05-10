@@ -9,6 +9,10 @@ controller.postProduct = async (e, args) => {
     const params = args
     // console.log(params)
     try {
+        const exist_code=await conn.query(`SELECT * FROM products WHERE product_code=$1 AND sucursal_id=$2`,[params.product_code,params.sucursal_id,])
+        if(exist_code.rowCount>0){
+            return JSON.stringify({status:300, message:'Error, El condigo de Producto ya Existe'})
+        }
         await conn.query(
             `INSERT INTO products VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
             [
@@ -59,6 +63,22 @@ controller.getAllProducts = async (e, args) => {
         }
         // console.log(array)
         return JSON.stringify(array)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+controller.getSpecificProducts=async(e,args)=>{
+    const type_id=args.type_id
+    const idSuc=args.idSuc
+    try {
+        const result=await conn.query(
+            `SELECT p.product_id,p.product_name, p.product_image
+            FROM products p
+            WHERE p.type_id=$1 AND p.sucursal_id=$2 ORDER BY p.product_name ASC`,
+            [type_id,idSuc]
+        )
+        return JSON.stringify(result.rows)
     } catch (error) {
         console.log(error)
     }

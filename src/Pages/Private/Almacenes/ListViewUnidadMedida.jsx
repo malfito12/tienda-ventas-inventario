@@ -5,7 +5,7 @@ import Chip from '@material-ui/core/Chip';
 import HomeIcon from '@material-ui/icons/Home';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Container, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import { Button, CircularProgress, Container, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import {AddUnidadMedida,EditUnidadMedida,DeleteUnidadMedida} from '../../../Components/Molecules/Products/AddUnidadMedida';
 import { AuthContext } from '../../../Components/Atoms/AuthContext';
 const ipcRenderer = window.require('electron').ipcRenderer
@@ -33,14 +33,17 @@ export default function ListViewUnidadMedida() {
     const {idSuc}=useContext(AuthContext)
     const classes = useStyles()
     const [unidad, setUnidad] = useState([])
+    const [loading,setLoading]=useState(false)
     useEffect(() => {
         getAllUnidadMedida()
     }, [])
 
     const getAllUnidadMedida = async () => {
+        setLoading(true)
         await ipcRenderer.invoke('get-all-unidad-medida',idSuc)
             .then(resp => setUnidad(JSON.parse(resp)))
             .catch(err => console.log(err))
+            .finally(()=>setLoading(false))
     }
     // console.log(unidad)
     return (
@@ -74,7 +77,11 @@ export default function ListViewUnidadMedida() {
                                     </TableCell>
                                 </TableRow>
                             ))
-                        ) : (null)}
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={3} align='center'>{loading?<CircularProgress/>:'No Existe Información'}</TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
