@@ -27,6 +27,7 @@ export function AddProduct(props) {
   const [preview, setPreview] = useState(null)
   const [unidadMedida, setUnidadMedida] = useState([])
   const [type, setType] = useState([])
+  const [typeSpecific, setTypeSpecific] = useState([])
   const name_product = useRef()
   const type_product = useRef()
   const unidad_product = useRef()
@@ -41,6 +42,7 @@ export function AddProduct(props) {
   }, [])
   const openCloseModal = () => {
     setOpenModal(!openModal)
+    setTypeSpecific([])
     setPreview(null)
   }
   const getUnidadMedida = async () => {
@@ -76,15 +78,13 @@ export function AddProduct(props) {
       .then(resp => {
         const response = JSON.parse(resp)
         if (response.status === 300) {
-          // Swal.fire('Error', response.message, 'error')
           Toast.fire({ icon: 'error', title: response.message })
-          openCloseModal()
           return
         }
 
         Toast.fire({ icon: 'success', title: response.message })
-        // Swal.fire('Success', response.message, 'success')
         openCloseModal()
+        setTypeSpecific([])
         props.getProducts()
         e.target.reset()
       })
@@ -111,7 +111,12 @@ export function AddProduct(props) {
       [e.target.name]: e.target.value
     })
   }
-
+  const handleType=async(e)=>{
+    var id=e.target.value
+    await ipcRenderer.invoke('get-specific-product',id)
+    .then(resp=>setTypeSpecific(JSON.parse(resp)))
+    .catch(err=>console.log(err))
+  }
   return (
     <>
       <Button variant='contained' endIcon={<SaveIcon />} size='small' onClick={openCloseModal} className={classes.buttonSave} style={{margin:5, textTransform: 'capitalize'}}>Nuevo Producto</Button>
@@ -150,6 +155,7 @@ export function AddProduct(props) {
                     inputRef={type_product}
                     required
                     defaultValue=""
+                    onChange={handleType}
                   >
                     {type.length > 0 ? (type.map((e, index) => (
                       <MenuItem key={index} value={e.type_id}>{e.type_name}</MenuItem>
@@ -218,6 +224,7 @@ export function AddProduct(props) {
                     fullWidth
                     inputRef={code_product}
                     required
+                    placeholder={typeSpecific.length===0?`Ejm X-100`:`Ultimo Codigo ${typeSpecific[0].product_code}`}
                   />
                 </div>
                 <div style={{ marginTop: 30 }} align='center'>

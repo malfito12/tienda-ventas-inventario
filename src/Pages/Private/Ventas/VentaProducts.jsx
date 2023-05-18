@@ -15,6 +15,7 @@ import 'jspdf-autotable'
 import QRCode from 'qrcode'
 import { useNavigate, useParams } from 'react-router-dom';
 import suc1 from '../../../images/suc1.png'
+import { AddClient } from '../../../Components/Molecules/Clients/ActionClient';
 
 const ipcRenderer = window.require('electron').ipcRenderer
 
@@ -101,6 +102,10 @@ export const VentaProducts = () => {
     return function (x) {
       return x.product_name.includes(buscador) ||
         x.product_name.toLowerCase().includes(buscador) ||
+        x.type_name.includes(buscador) ||
+        x.type_name.toLowerCase().includes(buscador) ||
+        x.product_code.includes(buscador) ||
+        x.product_code.toLowerCase().includes(buscador) ||
         x.product_code.toString().includes(buscador) ||
         !buscador
     }
@@ -175,13 +180,13 @@ export const VentaProducts = () => {
       .catch(err => {
         Toast.fire({ icon: 'error', title: err })
       })
-      .finally(()=>setLoadingPost(false))
+      .finally(() => setLoadingPost(false))
     // await ipcRenderer.invoke('post-product-venta',data)
     // .then(resp=>console.log(resp))
     // .catch(err=>console.log(err))
   }
   //---------------------BUSCAR CI---------------------
-
+  const [mostrar,setMostrar]=useState({noExist:'none',exists:'block'})
   const buscarCi = async (e) => {
     e.preventDefault()
     setLoadingCi(true)
@@ -190,13 +195,17 @@ export const VentaProducts = () => {
         var response = JSON.parse(resp)
         if (response.status === 300) {
           Toast.fire({ icon: 'error', title: response.message })
+          setMostrar({noExist:'block',exists:'none'})
+          setClient([])
           return
         }
-        setClient(JSON.parse(resp))
+        setMostrar({noExist:'none',exists:'block'})
+        setClient(response)
       })
       .catch(err => console.log(err))
       .finally(() => setLoadingCi(false))
   }
+  console.log(client)
   //---------------------PDF GENERATE---------------------
   const pdfGenerate = () => {
     const doc = new jsPDF({ orientation: 'portrait', unit: 'in', format: [11, 7] })
@@ -338,38 +347,40 @@ export const VentaProducts = () => {
                     label='N° Cedula de Indentidad'
                     variant='outlined'
                     size='small'
-                    style={{ width: '70%', background: 'white', borderRadius: 3 }}
+                    style={{ width: '65%', background: 'white', borderRadius: 3 }}
                     required
                   />
-                  <IconButton style={{ marginLeft: 10, background: '#1e88e5', color: 'white' }} onClick={buscarCi}>
+                  <IconButton style={{ marginLeft: 10, marginRight:20, background: '#1e88e5', color: 'white' }} onClick={buscarCi}>
                     <SearchIcon />
                   </IconButton>
+                  <AddClient refGet={2} />
                 </Grid>
                 {loadingCi ? <CircularProgress /> : (
                   <>
                     {client.length > 0 ? (
-                      <div style={{ background: '#757575', color: 'white', borderRadius: 5, padding: 1 }}>
+                      <div style={{ background: '#757575', color: 'white', borderRadius: 5, padding: 1, display:mostrar.exists }}>
                         <Typography align='center' variant='subtitle1' style={{ fontWeight: 'bold' }}>Datos Principales</Typography>
                         <Typography variant='body1' style={{ marginLeft: 10, marginBottom: 2 }}><span style={{ fontWeight: 'bold' }}> Nombre:</span> {client[0].client_name} {client[0].client_surname_p} {client[0].client_surname_m}</Typography>
                         <Typography variant='body1' style={{ marginLeft: 10, marginBottom: 10 }}><span style={{ fontWeight: 'bold' }}> Cedula de Identidad:</span> {client[0].client_ci}</Typography>
                       </div>
                     ) : null}
+                    <Typography align='center' style={{display:mostrar.noExist}}>No se Encontro Información del Cliente</Typography>
                   </>
                 )}
-                <TableContainer style={{ maxHeight: 200 }}>
+                <TableContainer style={{ maxHeight: 200, minWidth: 700 }}>
                   {uno.length > 0 ? (
                     uno.map((e, index) => (
                       <Grid key={index} container spacing={1} justifyContent='center' alignItems='center' style={{ padding: 5 }} >
                         <Grid item xs={12} sm={4}>
-                          <Typography>{e.product_name}</Typography>
+                          <Typography >{e.product_name}</Typography>
                         </Grid>
                         <Grid item xs={12} sm={2}>
                           <Typography>{e.type_amount}</Typography>
                         </Grid>
-                        <Grid item xs={12} sm={2}>
+                        <Grid item xs={12} sm={1}>
                           <Typography>{e.cantidad}</Typography>
                         </Grid>
-                        <Grid item xs={12} sm={2}>
+                        <Grid item xs={12} sm={3}>
                           {/* <TextField
                           name='price'
                           variant='outlined'
@@ -398,7 +409,7 @@ export const VentaProducts = () => {
                     value={`${nose.toFixed(2)} Bs.`}
                     variant='outlined'
                     size='small'
-                    style={{ margin:15}}
+                    style={{ margin: 15 }}
                     required
                   />
                 </Grid>
@@ -409,24 +420,25 @@ export const VentaProducts = () => {
                     defaultValue={nose}
                     variant='outlined'
                     size='small'
-                    style={{ marginLeft: 15,marginRight:15 }}
+                    style={{ marginLeft: 15, marginRight: 15 }}
                     required
                   />
                 </Grid>
-                <Button disabled={venta} type='submit' variant='contained' fullWidth size='small' endIcon={<SaveIcon />} style={venta?{background: '#bdbdbd', color: '#757575', textTransform: 'capitalize', marginTop: 10 }:{background: '#43a047', color: 'white', textTransform: 'capitalize', marginTop: 15}}>{loadingPost?<CircularProgress style={{width:25,height:25}}/>:'Realizar Venta'}</Button>
+                <Button disabled={venta} type='submit' variant='contained' fullWidth size='small' endIcon={<SaveIcon />} style={venta ? { background: '#bdbdbd', color: '#757575', textTransform: 'capitalize', marginTop: 10 } : { background: '#43a047', color: 'white', textTransform: 'capitalize', marginTop: 15 }}>{loadingPost ? <CircularProgress style={{ width: 25, height: 25 }} /> : 'Realizar Venta'}</Button>
               </form>
-              <Button disabled={!venta} onClick={pdfGenerate} variant='contained' fullWidth size='small' endIcon={<PrintIcon />} style={!venta?{background: '#bdbdbd', color: '#757575', textTransform: 'capitalize', marginTop: 10 }:{ background: '#1e88e5', color: 'white', textTransform: 'capitalize', marginTop: 10 }}>Imprimir Recibo</Button>
-              
+              <Button disabled={!venta} onClick={pdfGenerate} variant='contained' fullWidth size='small' endIcon={<PrintIcon />} style={!venta ? { background: '#bdbdbd', color: '#757575', textTransform: 'capitalize', marginTop: 10 } : { background: '#1e88e5', color: 'white', textTransform: 'capitalize', marginTop: 10 }}>Imprimir Recibo</Button>
+
             </Paper>
           </Grid>
           <Grid item xs={12} sm={7}>
             <TableContainer component={Paper} style={{ maxHeight: 400 }}>
-              <Table stickyHeader>
+              <Table stickyHeader style={{ minWidth: 1000 }}>
                 <TableHead>
                   <TableRow>
                     <TableCell className={classes.colorHead}>N°</TableCell>
                     <TableCell className={classes.colorHead}>Imagen</TableCell>
                     <TableCell className={classes.colorHead}>Codigo</TableCell>
+                    <TableCell className={classes.colorHead}>Tipo</TableCell>
                     <TableCell className={classes.colorHead}>Descripcion</TableCell>
                     <TableCell className={classes.colorHead}>Stock</TableCell>
                     <TableCell className={classes.colorHead}>Acciones</TableCell>
@@ -443,6 +455,7 @@ export const VentaProducts = () => {
                           </IconButton>
                         </TableCell>
                         <TableCell size='small'>{e.product_code}</TableCell>
+                        <TableCell size='small'>{e.type_name}</TableCell>
                         <TableCell size='small'>{e.product_name}</TableCell>
                         <TableCell size='small' width={20}><Paper style={
                           e.stock > 50

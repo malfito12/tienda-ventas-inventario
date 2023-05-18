@@ -193,7 +193,7 @@ CREATE TABLE IF NOT EXISTS total_mes(
 
 -- ALTER SEQUENCE product_types_type_codigo_seq RESTART WITH 100;
 -------------------------LISTA PRODUCTOS------------------------
-SELECT DISTINCT p.product_name,p.product_price,p.product_amount,s.sucursal_name
-FROM products p
-INNER JOIN sucursales s ON s.sucursal_id=p.sucursal_id
-WHERE p.sucursal_id=2
+-- SELECT DISTINCT p.product_name,p.product_price,p.product_amount,s.sucursal_name
+-- FROM products p
+-- INNER JOIN sucursales s ON s.sucursal_id=p.sucursal_id
+-- WHERE p.sucursal_id=2

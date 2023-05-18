@@ -18,7 +18,8 @@ controller.postTypeProduct=async(e,args)=>{
 
 controller.getAllTypeProduct=async(e,args)=>{
     try {
-        const result=await conn.query(`SELECT * FROM product_types WHERE sucursal_id=$1 ORDER BY type_register_date ASC`,[args])
+        const result=await conn.query(`
+        SELECT * FROM product_types WHERE sucursal_id=$1 ORDER BY type_register_date ASC`,[args])
         return JSON.stringify(result.rows)
     } catch (error) {
         console.log(error)
@@ -43,6 +44,18 @@ controller.deleteTypeProduct=async(e,args)=>{
     } catch (error) {
         console.log(error)
         return JSON.stringify({status:300,message:'Error, No se pudo Eliminar'})
+    }
+}
+//-----------------PRODUCTO ESPECIFICO----------------------------
+controller.getSpecificProduct=async(e,args)=>{
+    try {
+        const result=await conn.query(`SELECT p.product_code FROM products p WHERE type_id=$1 ORDER BY product_id DESC LIMIT 1`,[args])
+        if(result.rowCount>0){
+            return JSON.stringify(result.rows)
+        }
+        return JSON.stringify('')
+    } catch (error) {
+        console.log(error)
     }
 }
 

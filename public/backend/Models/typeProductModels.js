@@ -5,6 +5,7 @@ const router=ipcMain
 
 router.handle('post-type-product',typeProductControllers.postTypeProduct)
 router.handle('get-all-type-product',typeProductControllers.getAllTypeProduct)
+router.handle('get-specific-product',typeProductControllers.getSpecificProduct)
 router.handle('update-type-product',typeProductControllers.updateTypeProduct)
 router.handle('delete-type-product',typeProductControllers.deleteTypeProduct)
 

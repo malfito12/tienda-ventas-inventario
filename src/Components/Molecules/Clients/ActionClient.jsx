@@ -19,6 +19,7 @@ const Toast = Swal.mixin({
 })
 
 export function AddClient(props) {
+    
     const classes = useStyles()
     const [openModal, setOpenModal] = useState(false)
     const [loading,setLoading]=useState(false)
@@ -56,7 +57,9 @@ export function AddClient(props) {
                 }
                 Toast.fire({ icon: 'success', title: response.message })
                 openCloseModal()
-                props.getClients()
+                if(props.refGet===1){
+                    props.getClients()
+                }
             })
             .catch(err=>Toast.fire({ icon: 'error', title: err }))
             .finally(()=>setLoading(false))

@@ -139,6 +139,7 @@ export default function LibroDiario() {
                     <StyledBreadcrumb label="Busqueda Mes" onClick={() => navigate(`/home/maindrawer/balance-mes/${id}`)} />
                 </Breadcrumbs>
                 <MaterialTable
+                    style={{maxHeight:500}}
                     title='Reporte de Movimientos'
                     data={libro}
                     columns={columns}

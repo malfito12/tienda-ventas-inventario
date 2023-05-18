@@ -6,10 +6,11 @@ const database=()=>{
     }else{
         const pool= new pg.Pool({
             host: 'localhost',
-            user: 'root',
+            // user: 'root',
+            user: 'postgres',
             password: 'root',
             port: '5432',
-            database: 'ventas_almacen'
+            database: 'administracion'
         })
         // const pool= new pg.Pool({
         //     host: 'postgresql-109149-0.cloudclusters.net',

@@ -33,7 +33,7 @@ const CierreCaja = () => {
   const [products, setProducts] = useState([])
   const [openModal, setOpenModal] = useState(false)
   const [data, setData] = useState([])
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false)
 
   const anio = useRef()
   const mes = useRef()
@@ -62,7 +62,7 @@ const CierreCaja = () => {
     { title: 'Tipo Producto', field: 'type_name' },
     { title: 'Tipo MV', field: 'move_id', render: (row) => row.move_id === 1 ? <div style={{ color: 'red' }}>Egreso</div> : <div style={{ color: '#43a047' }}>Ingreso</div> },
     { title: 'Cantidad', field: 'product_move_amount' },
-    { title: 'Monto Bs.', field: 'product_move_price', render:(row)=><div>{row.product_move_price} Bs.</div> },
+    { title: 'Monto Bs.', field: 'product_move_price', render: (row) => <div>{row.product_move_price} Bs.</div> },
   ]
 
   const meses = [
@@ -138,7 +138,7 @@ const CierreCaja = () => {
         closeModalBalance()
       })
       .catch(err => Toast.fire({ icon: 'error', title: err }))
-      .finally(()=>setLoading(false))
+      .finally(() => setLoading(false))
 
   }
   // console.log(products)
@@ -152,6 +152,7 @@ const CierreCaja = () => {
           <StyledBreadcrumb label="Busqueda Mes" onClick={() => navigate(`/home/maindrawer/balance-mes/${id}`)} />
         </Breadcrumbs>
         <MaterialTable
+          style={{ maxHeight: 500 }}
           title='Reporte de Movimientos'
           data={products}
           columns={columns}
@@ -215,7 +216,7 @@ const CierreCaja = () => {
                 <MenuItem key={e.id} value={e.name}>{e.name}</MenuItem>
               ))}
             </TextField>
-            <Button disabled={loading} type='submit' variant='contained' fullWidth size='small' endIcon={<SaveIcon />} style={{ background: '#43a047', color: 'white', textTransform: 'capitalize', marginTop: 15 }}>{loading?<CircularProgress style={{width:25,height:25}}/>:'Guardar'}</Button>
+            <Button disabled={loading} type='submit' variant='contained' fullWidth size='small' endIcon={<SaveIcon />} style={{ background: '#43a047', color: 'white', textTransform: 'capitalize', marginTop: 15 }}>{loading ? <CircularProgress style={{ width: 25, height: 25 }} /> : 'Guardar'}</Button>
           </form>
         </Paper>
       </Dialog>

@@ -40,7 +40,7 @@ controller.getAllProducts = async (e, args) => {
     try {
         const array = []
         const result = await conn.query(
-            `SELECT DISTINCT p.product_id,p.product_name,s.sucursal_name,p.product_image,p.product_price,p.product_price_unit,p.product_amount_box,p.product_code,s.sucursal_id,t.type_id,u.u_medida_id
+            `SELECT DISTINCT p.product_id,p.product_name,s.sucursal_name,p.product_image,p.product_price,p.product_price_unit,p.product_amount_box,p.product_code,s.sucursal_id,t.type_id,t.type_name,u.u_medida_id
             FROM products p
             INNER JOIN sucursales s ON s.sucursal_id=p.sucursal_id
             INNER JOIN product_types t ON t.type_id=p.type_id

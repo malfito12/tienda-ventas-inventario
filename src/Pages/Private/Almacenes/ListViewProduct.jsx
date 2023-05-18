@@ -107,7 +107,7 @@ export default function ListViewProduct() {
                         // Swal.fire('Success', response.message, 'success')
                         getAllProducts()
                     })
-                    .catch(err=>Toast.fire({ icon: 'success', title: err }))
+                    .catch(err => Toast.fire({ icon: 'success', title: err }))
             }
         })
     }
@@ -118,6 +118,8 @@ export default function ListViewProduct() {
         return function (x) {
             return x.product_name.includes(buscador) ||
                 x.product_name.toLowerCase().includes(buscador) ||
+                x.type_name.includes(buscador) ||
+                x.type_name.toLowerCase().includes(buscador) ||
                 x.product_code.toString().includes(buscador) ||
                 !buscador
         }
@@ -133,7 +135,7 @@ export default function ListViewProduct() {
                 <StyledBreadcrumb label="Unidad de Medida" onClick={() => navigate(`/home/maindrawer/unidad-medida/${id}`)} />
             </Breadcrumbs>
             <Grid container direction='row' justifyContent='flex-end' alignItems='center' item xs={12} style={{ marginBottom: 10 }}>
-                <AddProduct getProducts={getAllProducts} />
+                <AddProduct refGet={1} getProducts={getAllProducts} />
                 <Typography variant='subtitle1' style={{ marginRight: 10, marginLeft: 25, color: '#e0e0e0' }} >Buscar</Typography>
                 <TextField
                     variant='outlined'
@@ -142,14 +144,15 @@ export default function ListViewProduct() {
                     onChange={e => setBuscador(e.target.value)}
                 />
             </Grid>
-            <TableContainer component={Paper} style={{ maxHeight: 500, }}  >
+            <TableContainer component={Paper} style={{ maxHeight: 500 }}  >
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
                             <TableCell className={classes.colorHead}>N°</TableCell>
                             <TableCell className={classes.colorHead} align='center'>imagen</TableCell>
+                            <TableCell className={classes.colorHead} align='center'>Codigo</TableCell>
+                            <TableCell className={classes.colorHead} align='center'>Tipo</TableCell>
                             <TableCell className={classes.colorHead} align='center'>Nombre de Producto</TableCell>
-                            <TableCell className={classes.colorHead} align='center'>Codigo de Producto</TableCell>
                             <TableCell className={classes.colorHead} align='center'>Cantidad Total Stock</TableCell>
                             <TableCell className={classes.colorHead} align='center'>Acciones</TableCell>
                         </TableRow>
@@ -164,9 +167,9 @@ export default function ListViewProduct() {
                                             <img src={e.product_image} style={{ width: '50px', height: '50px', borderRadius: 25 }} alt='#' />
                                         </IconButton>
                                     </TableCell>
-                                    <TableCell size='small' align='center'>{e.product_name}</TableCell>
-                                    {/* <TableCell>{e.product_total_amount}</TableCell> */}
                                     <TableCell size='small' align='center'>{e.product_code}</TableCell>
+                                    <TableCell size='small' align='center'>{e.type_name}</TableCell>
+                                    <TableCell size='small' align='center'>{e.product_name}</TableCell>
                                     <TableCell size='small' align='center'>{e.stock}</TableCell>
                                     <TableCell size='small' align='center'>
                                         <UpdateProduct data={e} getProducts={getAllProducts} />

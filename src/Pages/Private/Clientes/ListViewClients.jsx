@@ -54,7 +54,7 @@ export const ListViewClients = () => {
     <Container>
       <Typography className={classes.alignTextTitle} variant='h5' >Administrar Clientes</Typography>
       <Grid container direction='row' justifyContent='flex-end' alignItems='center' item xs={12} style={{ marginBottom: 10 }}>
-        <AddClient getClients={getAllClients} />
+        <AddClient refGet={1} getClients={getAllClients} />
         <Typography variant='subtitle1' style={{ marginRight: 10, marginLeft: 25, color: '#e0e0e0' }} >Buscar</Typography>
         <TextField
           label='Numero de CI'
