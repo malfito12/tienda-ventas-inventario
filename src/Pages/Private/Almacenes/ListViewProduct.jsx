@@ -5,7 +5,7 @@ import Chip from '@material-ui/core/Chip';
 import HomeIcon from '@material-ui/icons/Home';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, CircularProgress, Container, Grid, IconButton, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from '@material-ui/core';
+import { Button, CircularProgress, Container, Grid, IconButton, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Tooltip, Typography } from '@material-ui/core';
 import { AddProduct, UpdateProduct } from '../../../Components/Molecules/Products/AddProduct';
 import { AuthContext } from '../../../Components/Atoms/AuthContext';
 import DeleteForeverSharpIcon from '@material-ui/icons/DeleteForeverSharp';
@@ -37,6 +37,8 @@ export default function ListViewProduct() {
     const { id } = useParams()
     const classes = useStyles()
     const [products, setProducts] = useState([])
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
@@ -124,11 +126,18 @@ export default function ListViewProduct() {
                 !buscador
         }
     }
-
+    //-------------------------------------------
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
     // console.log(products)
     return (
-        <Container fixed>
-            <Breadcrumbs className={classes.spacingBread}>
+        <Container maxWidth={false}>
+            <Breadcrumbs>
                 {/* <StyledBreadcrumb label="Productos" style={{color:'black',fontSize:15}} icon={<HomeIcon fontSize="small" />} onClick={() => navigate(`/almacen/${id}`)} /> */}
                 <StyledBreadcrumb label="Productos" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/home/maindrawer/almacen/${id}`)} />
                 <StyledBreadcrumb label="Tipo de Producto" onClick={() => navigate(`/home/maindrawer/tipo-producto/${id}`)} />
@@ -144,7 +153,7 @@ export default function ListViewProduct() {
                     onChange={e => setBuscador(e.target.value)}
                 />
             </Grid>
-            <TableContainer component={Paper} style={{ maxHeight: 500 }}  >
+            <TableContainer component={Paper} style={{ maxHeight: '65vh'}}>
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
@@ -159,19 +168,19 @@ export default function ListViewProduct() {
                     </TableHead>
                     <TableBody>
                         {products.length > 0 ? (
-                            products.filter(buscarProducto(buscador)).map((e, index) => (
+                            products.filter(buscarProducto(buscador)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((e, index) => (
                                 <TableRow key={index}>
-                                    <TableCell size='small'>{index + 1}</TableCell>
-                                    <TableCell size='small' align='center'>
+                                    <TableCell size='small' style={{fontSize:12}}>{index + 1}</TableCell>
+                                    <TableCell size='small' align='center' style={{fontSize:12}}>
                                         <IconButton size='small' onClick={() => openImages(e.product_image)}>
-                                            <img src={e.product_image} style={{ width: '50px', height: '50px', borderRadius: 25 }} alt='#' />
+                                            <img src={e.product_image} style={{ width: '35px', height: '35px', borderRadius: 25 }} alt='#' />
                                         </IconButton>
                                     </TableCell>
-                                    <TableCell size='small' align='center'>{e.product_code}</TableCell>
-                                    <TableCell size='small' align='center'>{e.type_name}</TableCell>
-                                    <TableCell size='small' align='center'>{e.product_name}</TableCell>
-                                    <TableCell size='small' align='center'>{e.stock}</TableCell>
-                                    <TableCell size='small' align='center'>
+                                    <TableCell size='small' align='center' style={{fontSize:12}}>{e.product_code}</TableCell>
+                                    <TableCell size='small' align='center' style={{fontSize:12}}>{e.type_name}</TableCell>
+                                    <TableCell size='small' align='center' style={{fontSize:12}}>{e.product_name}</TableCell>
+                                    <TableCell size='small' align='center' style={{fontSize:12}}>{e.stock}</TableCell>
+                                    <TableCell size='small' align='center' style={{fontSize:12}}>
                                         <UpdateProduct data={e} getProducts={getAllProducts} />
                                         <Tooltip title='Eliminar'>
                                             <IconButton onClick={() => openCloseModalDelete(e.product_id)} size='small' style={{ background: '#f44336', color: 'white', marginRight: 5 }}>
@@ -194,6 +203,16 @@ export default function ListViewProduct() {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <TablePagination
+                style={{ background: '#424242', color: 'white' }}
+                rowsPerPageOptions={[10, 25, 50]}
+                component="div"
+                count={products.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+            />
         </Container>
     );
 }
@@ -211,6 +230,7 @@ const useStyles = makeStyles((theme) => ({
     colorHead: {
         background: '#424242',
         color: 'white',
-        padding: 13
+        padding: 13,
+        fontSize:12
     }
 }))

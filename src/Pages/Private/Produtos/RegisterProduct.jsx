@@ -106,7 +106,7 @@ export default function RegisterProduct() {
     }
     return (
         <Container>
-            <Breadcrumbs className={classes.spacingBread}>
+            <Breadcrumbs >
                 <StyledBreadcrumb label="Ingreso de Productos" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/home/maindrawer/registro-producto/${id}`)} />
                 <StyledBreadcrumb label="Movimiento Caja Chica"  onClick={() => navigate(`/home/maindrawer/ingresos-egresos/${id}`)} />
             </Breadcrumbs>

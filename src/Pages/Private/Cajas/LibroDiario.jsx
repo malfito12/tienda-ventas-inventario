@@ -139,7 +139,6 @@ export default function LibroDiario() {
                     <StyledBreadcrumb label="Busqueda Mes" onClick={() => navigate(`/home/maindrawer/balance-mes/${id}`)} />
                 </Breadcrumbs>
                 <MaterialTable
-                    style={{maxHeight:500}}
                     title='Reporte de Movimientos'
                     data={libro}
                     columns={columns}
@@ -210,8 +209,8 @@ export default function LibroDiario() {
 }
 const useStyles = makeStyles((theme) => ({
     spacingBread: {
-        marginTop: 20,
-        marginBottom: 20,
+        // marginTop: 20,
+        marginBottom: 10,
     },
     buttonSave: {
         background: '#43a047',

@@ -30,6 +30,7 @@ const Home = () => {
   // ------------------- GET SUCURSALES------------------------
   const getAllSucursales = async () => {
     setLoading(true)
+    setIdSucursal(0)
     await ipcRenderer.invoke('get-all-sucursales')
       .then(resp => {
         setSucursales(JSON.parse(resp))

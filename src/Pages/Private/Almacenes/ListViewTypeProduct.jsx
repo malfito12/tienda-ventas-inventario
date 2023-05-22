@@ -5,8 +5,8 @@ import Chip from '@material-ui/core/Chip';
 import HomeIcon from '@material-ui/icons/Home';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, CircularProgress, Container, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@material-ui/core';
-import {AddTypeProduct, DeleteType, EditTypeProduct} from '../../../Components/Molecules/Products/AddTypeProduct';
+import { Button, CircularProgress, Container, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip } from '@material-ui/core';
+import { AddTypeProduct, DeleteType, EditTypeProduct } from '../../../Components/Molecules/Products/AddTypeProduct';
 import { AuthContext } from '../../../Components/Atoms/AuthContext';
 const ipcRenderer = window.require('electron').ipcRenderer
 
@@ -29,25 +29,35 @@ const StyledBreadcrumb = withStyles((theme) => ({
 
 export default function ListViewTypeProduct() {
     const navigate = useNavigate()
-    const {idSuc}=useContext(AuthContext)
+    const { idSuc } = useContext(AuthContext)
     const { id } = useParams()
     const classes = useStyles()
     const [type, setType] = useState([])
-    const [loading,setLoading]=useState(false)
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [loading, setLoading] = useState(false)
     useEffect(() => {
         getAllUnidadMedida()
     }, [])
 
     const getAllUnidadMedida = async () => {
         setLoading(true)
-        await ipcRenderer.invoke('get-all-type-product',idSuc)
+        await ipcRenderer.invoke('get-all-type-product', idSuc)
             .then(resp => setType(JSON.parse(resp)))
             .catch(err => console.log(err))
-            .finally(()=>setLoading(false))
+            .finally(() => setLoading(false))
     }
+    //---------------------------------------------------
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
     return (
         <Container>
-            <Breadcrumbs className={classes.spacingBread}>
+            <Breadcrumbs>
                 <StyledBreadcrumb label="Productos" onClick={() => navigate(`/home/maindrawer/almacen/${id}`)} />
                 <StyledBreadcrumb label="Tipo de Producto" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/home/maindrawer/tipo-producto/${id}`)} />
                 <StyledBreadcrumb label="Unidad de Medida" onClick={() => navigate(`/home/maindrawer/unidad-medida/${id}`)} />
@@ -55,7 +65,7 @@ export default function ListViewTypeProduct() {
             <div align='right'>
                 <AddTypeProduct getType={getAllUnidadMedida} />
             </div>
-            <TableContainer component={Paper} style={{ maxHeight: 500 }}  >
+            <TableContainer component={Paper} style={{ maxHeight: '65vh'}}   >
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
@@ -66,7 +76,7 @@ export default function ListViewTypeProduct() {
                     </TableHead>
                     <TableBody>
                         {type.length > 0 ? (
-                            type.map((e, index) => (
+                            type.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((e, index) => (
                                 <TableRow key={index}>
                                     <TableCell size='small'>{index + 1}</TableCell>
                                     <TableCell size='small'>{e.type_name}</TableCell>
@@ -82,12 +92,22 @@ export default function ListViewTypeProduct() {
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={3} align='center'>{loading?<CircularProgress/>:'No Existe Información'}</TableCell>
+                                <TableCell colSpan={3} align='center'>{loading ? <CircularProgress /> : 'No Existe Información'}</TableCell>
                             </TableRow>
                         )}
                     </TableBody>
                 </Table>
             </TableContainer>
+            <TablePagination
+                style={{ background: '#424242', color: 'white' }}
+                rowsPerPageOptions={[10, 25, 50]}
+                component="div"
+                count={type.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+            />
         </Container>
     );
 }
@@ -101,9 +121,9 @@ const useStyles = makeStyles((theme) => ({
         color: 'white',
         marginBottom: 20,
     },
-    colorHead:{
-        background:'#424242',
-        color:'white',
-        padding:13
-      }
+    colorHead: {
+        background: '#424242',
+        color: 'white',
+        padding: 13
+    }
 }))

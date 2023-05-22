@@ -3,8 +3,11 @@ import React, { useContext, useRef, useState } from 'react'
 import Chip from '@material-ui/core/Chip';
 import { useNavigate, useParams } from 'react-router-dom';
 import SearchIcon from '@material-ui/icons/Search';
+import PrintIcon from '@material-ui/icons/Print';
 import Swal from 'sweetalert2';
 import { AuthContext } from '../../../Components/Atoms/AuthContext';
+import jsPDF from 'jspdf'
+import 'jspdf-autotable'
 
 
 const ipcRenderer = window.require('electron').ipcRenderer
@@ -29,7 +32,7 @@ export default function BalanceMensual() {
   const classes = useStyles()
   const navigate = useNavigate()
   const { id } = useParams()
-  const { idSuc } = useContext(AuthContext)
+  const { idSuc,sucName } = useContext(AuthContext)
   const [libro, setLibro] = useState([])
   const [total, setTotal] = useState([])
   const [loading,setLoading]=useState(false)
@@ -84,6 +87,43 @@ export default function BalanceMensual() {
       .catch(err => Toast.fire({ icon: 'error', title: err }))
       .finally(()=>setLoading(false))
   }
+  //----------------------IMPRIMIR--------------------
+  const pdfGenerate = () => {
+    if(libro.length===0 && total.length===0){
+        return Toast.fire({ icon: 'warning', title: 'No se puede imprimir informacion vacia' })
+
+    }
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'in', format: [11, 7] })
+    var pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth()
+    var pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.height()
+
+    doc.setFontSize(11)
+    doc.text(`REPORTE MES DE VENTAS`,pageWidth/2,0.5,'center')
+    doc.setFontSize(10)
+    doc.text(`Sucursal: ${sucName}`,0.6,0.7)
+    doc.text(`Mes: ${mes.current.value} del año: ${anio.current.value}`,3.5,0.7)
+    doc.autoTable({
+        head:[[
+            {content:'Fecha',styles:{halign: 'center'}},
+            {content:'Descripcion',styles:{halign: 'center'}},
+            {content:'Tipo Movimiento',styles:{halign: 'center'}},
+            {content:'Total Saldo',styles:{halign: 'center'}},
+        ]],
+        body:libro.map((e,index)=>([
+            {content:e.register_date},
+            {content:e.product_name},
+            {content:e.type_move===1?'Egreso':'Ingreso',styles:{halign: 'center'}},
+            {content:`${e.total}Bs.`,styles:{halign: 'right'}},
+        ])),
+        startY:0.8
+    })
+    doc.setFontSize(10)
+    doc.text('Total Semana',pageWidth/2,doc.lastAutoTable.finalY+0.3,'center')
+    doc.text(`Ingreso:${total[0].ingreso}Bs.     Egreso:${total[0].egreso}Bs.     Total:${total[0].total}Bs.`,pageWidth/2,doc.lastAutoTable.finalY+0.5,'center')
+
+    window.open(doc.output('bloburi'))
+
+}
   // console.log(libro)
   // console.log(total)
   return (
@@ -116,7 +156,7 @@ export default function BalanceMensual() {
                 ))}
               </TextField>
               <TextField
-                label='Año de Registro'
+                label='Año: Ejm 2010'
                 variant='outlined'
                 fullWidth
                 size='small'
@@ -125,8 +165,8 @@ export default function BalanceMensual() {
                 style={{ marginBottom: 15 }}
                 inputRef={anio}
               />
-              <Button type='submit' variant='contained' fullWidth size='small' endIcon={<SearchIcon />} style={{ background: '#43a047', color: 'white', textTransform: 'capitalize' }}>Buscar</Button>
-
+              <Button type='submit' variant='contained' fullWidth size='small' endIcon={<SearchIcon />} style={{ background: '#43a047', color: 'white', textTransform: 'capitalize',marginBottom:5 }}>Buscar</Button>
+              <Button variant='contained' onClick={pdfGenerate} fullWidth size='small' endIcon={<PrintIcon />} style={{ background: '#1e88e5', color: 'white', textTransform: 'capitalize' }}>Imprimir</Button>
             </form>
           </Paper>
         </Grid>
@@ -179,8 +219,8 @@ export default function BalanceMensual() {
 
 const useStyles = makeStyles((theme) => ({
   spacingBread: {
-    marginTop: 20,
-    marginBottom: 20,
+    // marginTop: 20,
+    marginBottom: 10,
   },
   buttonSave: {
     background: '#43a047',

@@ -28,7 +28,7 @@ controller.addSucursal = async (e, args) => {
 
 controller.getAllSucursal=async()=>{
     try {
-        const result=await conn.query(`SELECT * FROM sucursales`)
+        const result=await conn.query(`SELECT * FROM sucursales ORDER BY sucursal_name ASC`)
         return JSON.stringify(result.rows)
     } catch (error) {
         console.log(error)

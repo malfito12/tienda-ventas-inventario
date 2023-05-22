@@ -64,7 +64,7 @@ export const ListViewClients = () => {
           onChange={e => setBuscador(e.target.value)}
         />
       </Grid>
-      <TableContainer component={Paper} style={{ maxHeight: 500 }}>
+      <TableContainer component={Paper} style={{ maxHeight: '65vh'}}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
@@ -80,15 +80,15 @@ export const ListViewClients = () => {
           <TableBody>
             {clients.length > 0 ? (clients.filter(buscarCliente(buscador)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((e, index) => (
               <TableRow key={index}>
-                <TableCell size='small'>{index + 1}</TableCell>
-                <TableCell size='small'>
-                  <Avatar style={{ width: 35, height: 35 }}>{`${(e.client_name).charAt(0)}${(e.client_surname_p).charAt(0)}`}</Avatar>
+                <TableCell size='small' style={{fontSize:12}}>{index + 1}</TableCell>
+                <TableCell size='small'style={{fontSize:12}}>
+                  <Avatar style={{ width: 25, height: 25 }}>{`${(e.client_name).charAt(0)}${(e.client_surname_p).charAt(0)}`}</Avatar>
                 </TableCell>
-                <TableCell size='small'>{e.client_name} {e.client_surname_p} {e.client_surname_m}</TableCell>
-                <TableCell size='small'>{e.client_ci}</TableCell>
-                <TableCell size='small'>{e.client_phone}</TableCell>
-                <TableCell size='small'>{e.client_address}</TableCell>
-                <TableCell size='small'>
+                <TableCell size='small' style={{fontSize:12}}>{e.client_name} {e.client_surname_p} {e.client_surname_m}</TableCell>
+                <TableCell size='small' style={{fontSize:12}}>{e.client_ci}</TableCell>
+                <TableCell size='small' style={{fontSize:12}}>{e.client_phone}</TableCell>
+                <TableCell size='small' style={{fontSize:12}}>{e.client_address}</TableCell>
+                <TableCell size='small' style={{fontSize:12}}>
                   <UpdateClient data={e} getClients={getAllClients} />
                   <DeleteClient data={e} getClients={getAllClients} />
                 </TableCell>
@@ -117,12 +117,12 @@ export const ListViewClients = () => {
 
 const useStyles = makeStyles((theme) => ({
   alignTextTitle: {
-    marginBottom: 20,
     color: '#e0e0e0'
   },
   colorHead: {
     background: '#424242',
     color: 'white',
-    padding: 13
+    padding: 13,
+    fontSize:12
   }
 }))

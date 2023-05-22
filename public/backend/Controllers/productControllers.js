@@ -45,7 +45,7 @@ controller.getAllProducts = async (e, args) => {
             INNER JOIN sucursales s ON s.sucursal_id=p.sucursal_id
             INNER JOIN product_types t ON t.type_id=p.type_id
             INNER JOIN u_medidas u ON u.u_medida_id=p.u_medida_id
-            WHERE p.sucursal_id=$1`,
+            WHERE p.sucursal_id=$1 ORDER BY p.product_code ASC `,
             [args]
         )
         for (var i = 0; i < result.rowCount; i++) {

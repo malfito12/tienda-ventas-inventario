@@ -9,7 +9,7 @@ const ListViewUser = () => {
   const [users, setUsers] = useState([])
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false)
   useEffect(() => {
     getAllUsers()
   }, [])
@@ -18,13 +18,13 @@ const ListViewUser = () => {
   const getAllUsers = async () => {
     setLoading(true)
     await ipcRenderer.invoke('get-all-users')
-      .then(resp =>{
+      .then(resp => {
         setUsers(JSON.parse(resp))
       })
       .catch(err => console.log(err))
-      .finally(()=>setLoading(false))
+      .finally(() => setLoading(false))
   }
-
+  //---------------------------------------------------
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -60,7 +60,7 @@ const ListViewUser = () => {
           onChange={e => setBuscador(e.target.value)}
         />
       </Grid>
-      <TableContainer component={Paper} style={{ maxHeight: 500, }}>
+      <TableContainer component={Paper} style={{ maxHeight: '65vh'}}>
         <Table stickyHeader>
           <TableHead >
             <TableRow >
@@ -75,19 +75,18 @@ const ListViewUser = () => {
           </TableHead>
           <TableBody>
             {users.length > 0 ? (
-              // users.map((e, index) => (
               users.filter(buscarUsuario(buscador)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((e, index) => (
                 <TableRow key={index}>
-                  <TableCell size='small'>{index + 1}</TableCell>
+                  <TableCell size='small' style={{fontSize:12}}>{index + 1}</TableCell>
                   <TableCell>
-                    <Avatar style={{ width: 35, height: 35 }}>{`${(e.people_name).charAt(0)}`}</Avatar>
+                    <Avatar style={{ width: 25, height: 25 }}>{`${(e.people_name).charAt(0)}`}</Avatar>
                   </TableCell>
-                  <TableCell size='small'>{e.people_name}</TableCell>
-                  <TableCell size='small'>{e.user_name}</TableCell>
-                  <TableCell size='small'>{e.rol_name}</TableCell>
-                  {e.user_status === 'ACTIVO' ? <TableCell style={{ color: 'green' }}>{e.user_status}</TableCell> : <TableCell style={{ color: 'red' }}>{e.user_status}</TableCell>}
+                  <TableCell size='small' style={{fontSize:12}}>{e.people_name}</TableCell>
+                  <TableCell size='small' style={{fontSize:12}}>{e.user_name}</TableCell>
+                  <TableCell size='small' style={{fontSize:12}}>{e.rol_name}</TableCell>
+                  {e.user_status === 'ACTIVO' ? <TableCell style={{ color: 'green', fontSize:12 }}>{e.user_status}</TableCell> : <TableCell style={{ color: 'red', fontSize:12 }}>{e.user_status}</TableCell>}
 
-                  <TableCell size='small'>
+                  <TableCell size='small' style={{fontSize:12}}>
                     <EditUser data={e} getUsers={getAllUsers} />
                     <CambioPass data={e} getUsers={getAllUsers} />
                     <DeleteUser data={e} getUsers={getAllUsers} />
@@ -96,7 +95,7 @@ const ListViewUser = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} align='center'>{loading?<CircularProgress/>:'No Existe Información'}</TableCell>
+                <TableCell colSpan={7} align='center'>{loading ? <CircularProgress /> : 'No Existe Información'}</TableCell>
               </TableRow>
             )}
           </TableBody>
@@ -120,12 +119,11 @@ export default ListViewUser
 
 const useStyles = makeStyles((theme) => ({
   alignTextTitle: {
-    marginBottom: 20,
     color: '#e0e0e0'
   },
   colorHead: {
     background: '#424242',
     color: 'white',
-    padding: 13
+    fontSize:12
   }
 }))

@@ -74,7 +74,7 @@ export default function IngresosEgresos() {
   }
   return (
     <Container>
-      <Breadcrumbs className={classes.spacingBread}>
+      <Breadcrumbs >
         <StyledBreadcrumb label="Ingreso de Productos" onClick={() => navigate(`/home/maindrawer/registro-producto/${id}`)} />
         <StyledBreadcrumb label="Movimiento Caja Chica" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/home/maindrawer/ingresos-egresos/${id}`)} />
       </Breadcrumbs>

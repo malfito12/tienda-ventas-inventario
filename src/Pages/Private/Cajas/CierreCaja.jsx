@@ -152,7 +152,6 @@ const CierreCaja = () => {
           <StyledBreadcrumb label="Busqueda Mes" onClick={() => navigate(`/home/maindrawer/balance-mes/${id}`)} />
         </Breadcrumbs>
         <MaterialTable
-          style={{ maxHeight: 500 }}
           title='Reporte de Movimientos'
           data={products}
           columns={columns}
@@ -228,8 +227,8 @@ export default CierreCaja
 
 const useStyles = makeStyles((theme) => ({
   spacingBread: {
-    marginTop: 20,
-    marginBottom: 20,
+    // marginTop: 20,
+    marginBottom: 10,
   },
   buttonSave: {
     background: '#43a047',

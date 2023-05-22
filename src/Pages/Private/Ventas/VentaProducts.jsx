@@ -1,4 +1,4 @@
-import { Box, Breadcrumbs, Button, Chip, CircularProgress, Container, Dialog, emphasize, Grid, IconButton, InputLabel, makeStyles, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TableRow, TextField, Typography, withStyles } from '@material-ui/core'
+import { Box, Breadcrumbs, Button, Chip, CircularProgress, Container, Dialog, emphasize, Grid, IconButton, InputLabel, makeStyles, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, TextField, Typography, withStyles } from '@material-ui/core'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import SearchIcon from '@material-ui/icons/Search';
 import { AuthContext } from '../../../Components/Atoms/AuthContext';
@@ -48,6 +48,8 @@ export const VentaProducts = () => {
   const [loading, setLoading] = useState(false)
   const [loadingCi, setLoadingCi] = useState(false)
   const [loadingPost, setLoadingPost] = useState(false)
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [changeData, setChangeData] = useState({
     product_name: '',
     product_amount: '',
@@ -186,7 +188,7 @@ export const VentaProducts = () => {
     // .catch(err=>console.log(err))
   }
   //---------------------BUSCAR CI---------------------
-  const [mostrar,setMostrar]=useState({noExist:'none',exists:'block'})
+  const [mostrar, setMostrar] = useState({ noExist: 'none', exists: 'block' })
   const buscarCi = async (e) => {
     e.preventDefault()
     setLoadingCi(true)
@@ -195,11 +197,11 @@ export const VentaProducts = () => {
         var response = JSON.parse(resp)
         if (response.status === 300) {
           Toast.fire({ icon: 'error', title: response.message })
-          setMostrar({noExist:'block',exists:'none'})
+          setMostrar({ noExist: 'block', exists: 'none' })
           setClient([])
           return
         }
-        setMostrar({noExist:'none',exists:'block'})
+        setMostrar({ noExist: 'none', exists: 'block' })
         setClient(response)
       })
       .catch(err => console.log(err))
@@ -316,16 +318,24 @@ export const VentaProducts = () => {
 
     })
   }
+  //---------------------------------------------------
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
   // console.log(changeData.cantidad)
   // console.log(changeData.product_price)
   return (
     <>
       <Container maxWidth={false}>
-        <Breadcrumbs className={classes.spacingBread}>
+        <Breadcrumbs >
           <StyledBreadcrumb label="Realizar Venta" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/home/maindrawer/ventas/${id}`)} />
           <StyledBreadcrumb label="Registro de Ventas" onClick={() => navigate(`/home/maindrawer/lista-ventas/${id}`)} />
         </Breadcrumbs>
-        <Grid style={{ marginTop: 20, marginBottom: 10 }} container justifyContent='flex-end' alignItems='center'>
+        <Grid style={{ marginBottom: 10 }} container justifyContent='flex-end' alignItems='center'>
           <Typography variant='subtitle1' style={{ marginRight: 10, color: '#e0e0e0' }} >Buscar</Typography>
           <TextField
             variant='outlined'
@@ -347,10 +357,10 @@ export const VentaProducts = () => {
                     label='N° Cedula de Indentidad'
                     variant='outlined'
                     size='small'
-                    style={{ width: '65%', background: 'white', borderRadius: 3 }}
+                    style={{ width: '45%', background: 'white', borderRadius: 3 }}
                     required
                   />
-                  <IconButton style={{ marginLeft: 10, marginRight:20, background: '#1e88e5', color: 'white' }} onClick={buscarCi}>
+                  <IconButton style={{ marginLeft: 10, marginRight: 10, background: '#1e88e5', color: 'white' }} onClick={buscarCi}>
                     <SearchIcon />
                   </IconButton>
                   <AddClient refGet={2} />
@@ -358,40 +368,32 @@ export const VentaProducts = () => {
                 {loadingCi ? <CircularProgress /> : (
                   <>
                     {client.length > 0 ? (
-                      <div style={{ background: '#757575', color: 'white', borderRadius: 5, padding: 1, display:mostrar.exists }}>
-                        <Typography align='center' variant='subtitle1' style={{ fontWeight: 'bold' }}>Datos Principales</Typography>
-                        <Typography variant='body1' style={{ marginLeft: 10, marginBottom: 2 }}><span style={{ fontWeight: 'bold' }}> Nombre:</span> {client[0].client_name} {client[0].client_surname_p} {client[0].client_surname_m}</Typography>
-                        <Typography variant='body1' style={{ marginLeft: 10, marginBottom: 10 }}><span style={{ fontWeight: 'bold' }}> Cedula de Identidad:</span> {client[0].client_ci}</Typography>
+                      <div style={{ background: '#757575', color: 'white', borderRadius: 5, padding: 1, display: mostrar.exists }}>
+                        <Typography align='center' variant='subtitle1' style={{ fontWeight: 'bold', fontSize: 12 }}>Datos Principales</Typography>
+                        <Typography variant='body1' style={{ marginLeft: 10, marginBottom: 2, fontSize: 12 }}><span style={{ fontWeight: 'bold', fontSize: 12 }}> Nombre:</span> {client[0].client_name} {client[0].client_surname_p} {client[0].client_surname_m}</Typography>
+                        <Typography variant='body1' style={{ marginLeft: 10, marginBottom: 10, fontSize: 12 }}><span style={{ fontWeight: 'bold', fontSize: 12 }}> Cedula de Identidad:</span> {client[0].client_ci}</Typography>
                       </div>
                     ) : null}
-                    <Typography align='center' style={{display:mostrar.noExist}}>No se Encontro Información del Cliente</Typography>
+                    <Typography align='center' style={{ display: mostrar.noExist }}>No se Encontro Información del Cliente</Typography>
                   </>
                 )}
-                <TableContainer style={{ maxHeight: 200, minWidth: 700 }}>
+                <TableContainer style={{ maxHeight: '25vh' }}>
                   {uno.length > 0 ? (
                     uno.map((e, index) => (
                       <Grid key={index} container spacing={1} justifyContent='center' alignItems='center' style={{ padding: 5 }} >
                         <Grid item xs={12} sm={4}>
-                          <Typography >{e.product_name}</Typography>
+                          <Typography style={{ fontSize: 12 }} >{e.product_name}</Typography>
                         </Grid>
                         <Grid item xs={12} sm={2}>
-                          <Typography>{e.type_amount}</Typography>
+                          <Typography style={{ fontSize: 12 }}>{e.type_amount}</Typography>
                         </Grid>
                         <Grid item xs={12} sm={1}>
-                          <Typography>{e.cantidad}</Typography>
+                          <Typography style={{ fontSize: 12 }}>{e.cantidad}</Typography>
                         </Grid>
-                        <Grid item xs={12} sm={3}>
-                          {/* <TextField
-                          name='price'
-                          variant='outlined'
-                          size='small'
-                          defaultValue={e.price}
-                          onChange={handleChange}
-                        // onChange={handleCambio}
-                        /> */}
-                          <Typography>{e.price} Bs.</Typography>
+                        <Grid item xs={12} sm={2}>
+                          <Typography style={{ fontSize: 12 }}>{e.price} Bs.</Typography>
                         </Grid>
-                        <Grid item xs={12} sm={2} align='center'>
+                        <Grid item xs={12} sm={3} align='center'>
                           <IconButton onClick={() => openCloseModalData(e)} size='small' style={{ background: '#fb8c00', color: 'white', marginRight: 10 }}>
                             <EditSharpIcon />
                           </IconButton>
@@ -404,7 +406,7 @@ export const VentaProducts = () => {
                   ) : null}
                 </TableContainer>
                 <Grid container spacing={3} direction='row' justifyContent='flex-end' alignItems='center'>
-                  <InputLabel>Precio Total</InputLabel>
+                  <InputLabel style={{ fontSize: 12 }}>Precio Total</InputLabel>
                   <TextField
                     value={`${nose.toFixed(2)} Bs.`}
                     variant='outlined'
@@ -414,7 +416,7 @@ export const VentaProducts = () => {
                   />
                 </Grid>
                 <Grid container spacing={3} direction='row' justifyContent='flex-end' alignItems='center'>
-                  <InputLabel>Precio de Venta</InputLabel>
+                  <InputLabel style={{ fontSize: 12 }}>Precio de Venta</InputLabel>
                   <TextField
                     inputRef={precioVenta}
                     defaultValue={nose}
@@ -431,8 +433,8 @@ export const VentaProducts = () => {
             </Paper>
           </Grid>
           <Grid item xs={12} sm={7}>
-            <TableContainer component={Paper} style={{ maxHeight: 400 }}>
-              <Table stickyHeader style={{ minWidth: 1000 }}>
+            <TableContainer component={Paper} style={{ maxHeight: '65vh' }}>
+              <Table stickyHeader style={{ minWidth: 700 }}>
                 <TableHead>
                   <TableRow>
                     <TableCell className={classes.colorHead}>N°</TableCell>
@@ -446,17 +448,17 @@ export const VentaProducts = () => {
                 </TableHead>
                 <TableBody>
                   {products.length > 0 ? (
-                    products.filter(buscarProducto(buscador)).map((e, index) => (
+                    products.filter(buscarProducto(buscador)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((e, index) => (
                       <TableRow key={index}>
-                        <TableCell size='small'>{index + 1}</TableCell>
-                        <TableCell size='small'>
+                        <TableCell size='small' style={{ fontSize: 12 }}>{index + 1}</TableCell>
+                        <TableCell size='small' style={{ fontSize: 12 }}>
                           <IconButton size='small' onClick={() => openImages(e.product_image)}>
-                            <img src={e.product_image} style={{ width: '50px', height: '50px', borderRadius: 25 }} alt='#' />
+                            <img src={e.product_image} style={{ width: '25px', height: '25px', borderRadius: 25 }} alt='#' />
                           </IconButton>
                         </TableCell>
-                        <TableCell size='small'>{e.product_code}</TableCell>
-                        <TableCell size='small'>{e.type_name}</TableCell>
-                        <TableCell size='small'>{e.product_name}</TableCell>
+                        <TableCell size='small' style={{ fontSize: 12 }}>{e.product_code}</TableCell>
+                        <TableCell size='small' style={{ fontSize: 12 }}>{e.type_name}</TableCell>
+                        <TableCell size='small' style={{ fontSize: 12 }}>{e.product_name}</TableCell>
                         <TableCell size='small' width={20}><Paper style={
                           e.stock > 50
                             ? { background: '#43a047', color: 'white', padding: 5 }
@@ -483,6 +485,16 @@ export const VentaProducts = () => {
                 </TableBody>
               </Table>
             </TableContainer>
+            <TablePagination
+              style={{ background: '#424242', color: 'white',borderBottomLeftRadius:5,borderBottomRightRadius:5 }}
+              rowsPerPageOptions={[10, 25, 50]}
+              component="div"
+              count={products.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
           </Grid>
         </Grid>
       </Container>
@@ -568,6 +580,8 @@ const useStyles = makeStyles((theme) => ({
   colorHead: {
     background: '#424242',
     color: 'white',
-    padding: 13
+    padding: 13,
+    fontSize: 12,
+    // padding: 7,
   }
 }))

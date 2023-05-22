@@ -19,7 +19,7 @@ controller.postUnidadMedida=async(e,args)=>{
 
 controller.getAllUnidadMedida=async(e,args)=>{
     try {
-        const result=await conn.query(`SELECT * FROM u_medidas WHERE sucursal_id=$1 ORDER BY u_medida_register_date ASC`,[args])
+        const result=await conn.query(`SELECT * FROM u_medidas WHERE sucursal_id=$1 ORDER BY u_medida_name ASC`,[args])
         return JSON.stringify(result.rows)
     } catch (error) {
         console.log(error)

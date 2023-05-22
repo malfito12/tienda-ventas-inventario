@@ -4,7 +4,10 @@ import Chip from '@material-ui/core/Chip';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../../../Components/Atoms/AuthContext';
 import SearchIcon from '@material-ui/icons/Search';
+import PrintIcon from '@material-ui/icons/Print';
 import Swal from 'sweetalert2';
+import jsPDF from 'jspdf'
+import 'jspdf-autotable'
 
 
 const ipcRenderer = window.require('electron').ipcRenderer
@@ -29,10 +32,10 @@ export default function BalanceDiario() {
     const classes = useStyles()
     const navigate = useNavigate()
     const { id } = useParams()
-    const { idSuc } = useContext(AuthContext)
+    const { idSuc,sucName } = useContext(AuthContext)
     const [libro, setLibro] = useState([])
     const [total, setTotal] = useState([])
-    const [loading,setLoading]=useState(false)
+    const [loading, setLoading] = useState(false)
 
     const fechaInicio = useRef()
     const fechaFin = useRef()
@@ -57,6 +60,8 @@ export default function BalanceDiario() {
             sucursal_id: idSuc
         }
         setLoading(true)
+        setLibro([])
+        setTotal([])
         await ipcRenderer.invoke(`get-libro-semana`, data)
             .then(resp => {
                 var response = JSON.parse(resp)
@@ -69,7 +74,46 @@ export default function BalanceDiario() {
                 Toast.fire({ icon: 'success', title: response.message })
             })
             .catch(err => Toast.fire({ icon: 'error', title: err }))
-            .finally(()=>setLoading(false))
+            .finally(() => setLoading(false))
+    }
+    //----------------------IMPRIMIR--------------------
+    const pdfGenerate = () => {
+        if(libro.length===0 && total.length===0){
+            return Toast.fire({ icon: 'warning', title: 'No se puede imprimir informacion vacia' })
+
+        }
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'in', format: [11, 7] })
+        var pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth()
+        var pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.height()
+
+        doc.setFontSize(11)
+        doc.text(`REPORTE SEMANAL DE VENTAS`,pageWidth/2,0.5,'center')
+        doc.setFontSize(10)
+        doc.text(`Sucursal: ${sucName}`,0.6,0.7)
+        doc.text(`Fecha desde: ${fechaInicio.current.value} hasta: ${fechaFin.current.value}`,3.5,0.7)
+        doc.autoTable({
+            head:[[
+                {content:'Fecha'},
+                {content:'Descripcion'},
+                {content:'Ingresos'},
+                {content:'Egresos'},
+                {content:'Total'},
+            ]],
+            body:libro.map((e,index)=>([
+                {content:e.register_date},
+                {content:e.name_product},
+                {content:e.move_id===2||e.move_id===3?e.price_product:''},
+                {content:e.move_id===4?e.price_product:''},
+                {content:e.total},
+            ])),
+            startY:0.8
+        })
+        doc.setFontSize(10)
+        doc.text('Total Semana',pageWidth/2,doc.lastAutoTable.finalY+0.3,'center')
+        doc.text(`Ingreso:${total[0].ingreso}Bs.     Egreso:${total[0].egreso}Bs.     Total:${total[0].total}Bs.`,pageWidth/2,doc.lastAutoTable.finalY+0.5,'center')
+
+        window.open(doc.output('bloburi'))
+
     }
     // console.log(libro)
     // console.log(total)
@@ -87,7 +131,7 @@ export default function BalanceDiario() {
                         <Typography variant='subtitle1' align='center' style={{ marginBottom: 20 }}>Busqueda Balance Semana</Typography>
                         <form onSubmit={getLibroSemana}>
                             <TextField
-                                label='Fecha de Inicio'
+                                label='Fecha Inicio'
                                 variant='outlined'
                                 fullWidth
                                 size='small'
@@ -98,7 +142,7 @@ export default function BalanceDiario() {
                                 inputRef={fechaInicio}
                             />
                             <TextField
-                                label='Fecha de Inicio'
+                                label='Fecha Fin'
                                 variant='outlined'
                                 fullWidth
                                 size='small'
@@ -108,14 +152,15 @@ export default function BalanceDiario() {
                                 style={{ marginBottom: 15 }}
                                 inputRef={fechaFin}
                             />
-                            <Button type='submit' variant='contained' fullWidth size='small' endIcon={<SearchIcon />} style={{ background: '#43a047', color: 'white', textTransform: 'capitalize' }}>Buscar</Button>
+                            <Button type='submit' variant='contained' fullWidth size='small' endIcon={<SearchIcon />} style={{ background: '#43a047', color: 'white', textTransform: 'capitalize', marginBottom: 5 }}>Buscar</Button>
+                            <Button variant='contained' onClick={pdfGenerate} fullWidth size='small' endIcon={<PrintIcon />} style={{ background: '#1e88e5', color: 'white', textTransform: 'capitalize' }}>Imprimir</Button>
 
                         </form>
                     </Paper>
                 </Grid>
                 <Grid item xs={12} sm={8}>
-                    <TableContainer component={Paper} style={{ marginBottom: 20, maxHeight: 500 }}>
-                        <Table stickyHeader>
+                    <TableContainer component={Paper} style={{ maxHeight: '65vh', marginBottom: 10 }}>
+                        <Table id='table' stickyHeader>
                             <TableHead>
                                 <TableRow>
                                     <TableCell className={classes.colorHead}>Fecha</TableCell>
@@ -138,7 +183,7 @@ export default function BalanceDiario() {
                                     ))
                                 ) : (
                                     <TableRow>
-                                        <TableCell align='center' colSpan={5}>{loading?<CircularProgress/>:'No hay Información'}</TableCell>
+                                        <TableCell align='center' colSpan={5}>{loading ? <CircularProgress /> : 'No hay Información'}</TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>
@@ -163,8 +208,8 @@ export default function BalanceDiario() {
 }
 const useStyles = makeStyles((theme) => ({
     spacingBread: {
-        marginTop: 20,
-        marginBottom: 20,
+        // marginTop: 20,
+        marginBottom: 10,
     },
     buttonSave: {
         background: '#43a047',

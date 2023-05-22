@@ -137,7 +137,7 @@ export default function ListViewVentas() {
                 <StyledBreadcrumb label="Realizar Venta" onClick={() => navigate(`/home/maindrawer/ventas/${id}`)} />
                 <StyledBreadcrumb label="Registro de Ventas" style={{ color: 'black', fontSize: 15 }} onClick={() => navigate(`/home/maindrawer/lista-ventas/${id}`)} />
             </Breadcrumbs>
-            <Container maxWidth='md'>
+            <Container maxWidth='md' >
                 {loading ?<div align='center'><CircularProgress /></div>  : (
                     <>
                         {lista.length > 0 ? (

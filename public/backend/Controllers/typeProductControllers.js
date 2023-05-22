@@ -19,7 +19,7 @@ controller.postTypeProduct=async(e,args)=>{
 controller.getAllTypeProduct=async(e,args)=>{
     try {
         const result=await conn.query(`
-        SELECT * FROM product_types WHERE sucursal_id=$1 ORDER BY type_register_date ASC`,[args])
+        SELECT * FROM product_types WHERE sucursal_id=$1 ORDER BY type_name ASC`,[args])
         return JSON.stringify(result.rows)
     } catch (error) {
         console.log(error)
