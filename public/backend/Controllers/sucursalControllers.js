@@ -26,23 +26,47 @@ controller.addSucursal = async (e, args) => {
     }
 }
 
-controller.getAllSucursal=async()=>{
+controller.getAllSucursal = async () => {
     try {
-        const result=await conn.query(`SELECT * FROM sucursales ORDER BY sucursal_name ASC`)
+        const result = await conn.query(`SELECT * FROM sucursales ORDER BY sucursal_name ASC`)
         return JSON.stringify(result.rows)
     } catch (error) {
         console.log(error)
     }
 }
 
-controller.getSucursal=async(e,args)=>{
+controller.getSucursal = async (e, args) => {
     try {
-        const result=await conn.query(`SELECT * FROM sucursales WHERE sucursal_id=$1`,[args])
+        const result = await conn.query(`SELECT * FROM sucursales WHERE sucursal_id=$1`, [args])
         return JSON.stringify(result.rows)
     } catch (error) {
         console.log(error)
     }
 }
+controller.editSucursal = async (e, args) => {
+    const params = args
+    // console.log(params)
+    try {
+        await conn.query(
+            `UPDATE sucursales 
+            SET sucursal_name=$1,sucursal_address=$2,sucursal_dep=$3,sucursal_phone=$4 WHERE sucursal_id=$5`,
+            [params.name_sucursal, params.address_sucursal, params.dep_sucursal, params.phone_sucursal, params.sucursal_id])
+        return JSON.stringify({ status: 200, message: 'Sucursal Actualizada Correctamente' })
+    } catch (error) {
+        console.log(error)
+        return JSON.stringify({ status: 300, message: 'Error, No se pudo Actualizar' })
+    }
+}
+controller.deleteSucursal = async (e, args) => {
+    try {
+        await conn.query(`DELETE FROM sucursales WHERE sucursal_id=$1`, [args])
+        return JSON.stringify({ status: 200, message: 'Sucursal Eliminada' })
+    } catch (error) {
+        console.log(error)
+        return JSON.stringify({ status: 300, message: 'Error, No se pudo eliminar' })
+    }
+}
+
 
 
 module.exports = controller

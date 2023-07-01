@@ -3,12 +3,14 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HomeIcon from '@material-ui/icons/Home';
 import MenuIcon from '@material-ui/icons/Menu';
 import React, { useContext, useState } from 'react'
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../Atoms/AuthContext';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import StoreIcon from '@material-ui/icons/Store';
 
 const drawerWidth = 60;
 const MainAppBar = (props) => {
+    const navigate=useNavigate()
     let location = useLocation()
     const classes = useStyles()
     const { secondLoguot, sucName } = useContext(AuthContext)
@@ -41,7 +43,7 @@ const MainAppBar = (props) => {
                 className={
                     location.pathname === '/home'
                         ? null
-                        : location.pathname === '/home/registro-sucursal'
+                        : location.pathname === '/home/registro-sucursal' || location.pathname==='/home/edit-sucursal'
                             ? null
                             : classes.appBar
                 }
@@ -63,8 +65,8 @@ const MainAppBar = (props) => {
                         </Tooltip>
                     </NavLink>
                     {sucName === undefined
-                        ? (<Typography variant="subtitle1" style={{marginLeft:5}} noWrap>Inicio</Typography>)
-                        : (<Typography variant="subtitle1" style={{marginLeft:5}} noWrap>Sucursal {sucName}</Typography>)
+                        ? (<Typography variant="subtitle1" style={{ marginLeft: 5 }} noWrap>Inicio</Typography>)
+                        : (<Typography variant="subtitle1" style={{ marginLeft: 5 }} noWrap>Sucursal {sucName}</Typography>)
                     }
                     <div style={{ flexGrow: 1 }} />
                     <Typography>{window.sessionStorage.getItem('user_name')}</Typography>
@@ -87,11 +89,12 @@ const MainAppBar = (props) => {
                 }}
                 open={Boolean(openDrop)}
                 onClose={closeDropDown}
-            >
-                <MenuItem onClick={closeDropDown}>
-                    <AccountCircleIcon style={{ marginRight: 10 }} />
-                    Mi Perfil
+            >{sucName === undefined ? null : (
+                <MenuItem onClick={()=>navigate(`/home/edit-sucursal`)}>
+                    <StoreIcon style={{ marginRight: 10 }} />
+                    Perfil Sucursal
                 </MenuItem>
+            )}
                 <MenuItem onClick={cerrarSesion}>
                     {loading ? <CircularProgress style={{ width: 20, height: 20 }} /> : <ExitToAppIcon style={{ color: 'red', marginRight: 10 }} />}
                     Cerrar Sesion

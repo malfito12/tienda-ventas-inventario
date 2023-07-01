@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import React, { useRef, useState } from 'react'
 import Swal from 'sweetalert2';
 import MainAppBar from '../../../Components/Molecules/MainAppBar';
+import { useNavigate } from 'react-router-dom';
 const ipcRenderer = window.require('electron').ipcRenderer
 
 const Toast = Swal.mixin({
@@ -18,6 +19,7 @@ const Toast = Swal.mixin({
   })
 
 const AddSucursal = () => {
+    const navigate=useNavigate()
     const classes = useStyles()
     const [dataDep, setDataDep] = useState('')
     const name_sucursal = useRef()
@@ -60,6 +62,7 @@ const AddSucursal = () => {
                     Toast.fire({ icon: 'error', title: response.message })
                     return
                 }
+                navigate('/home')
                 Toast.fire({ icon: 'success', title: response.message })
                 e.target.reset()
             })

@@ -7,6 +7,7 @@ import MainDrawer from '../Organisms/MainDrawer'
 import RouterPrivate from '../Routes/RouterPrivate'
 import RouterPublic from '../Routes/RouterPublic'
 import { AuthContext } from './AuthContext'
+import EditSucursal from '../../Pages/Private/Sucursales/EditSucursal'
 
 const Navigation = () => {
     // const { user } = useContext(AuthContext)
@@ -39,6 +40,7 @@ const Navigation = () => {
                 <Route path='/home' element={<RouterPrivate />}>
                     <Route index element={<Home />}/>
                     <Route path='/home/registro-sucursal' element={<AddSucursal />}/>
+                    <Route path='/home/edit-sucursal' element={<EditSucursal />}/>
                     <Route path='/home/maindrawer/*' element={<MainDrawer />} />
                 </Route>
             </Routes>
